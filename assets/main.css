@@ -1,0 +1,67 @@
+.sp-viewport-wrap {
+    width: 100%;
+    height: 100%;
+}
+
+.sp-viewport {
+    background-size: cover;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.square {
+    position: absolute;
+    background: black;
+    width: 36;
+    height: 36;
+}
+
+.scissors {
+    background-image: url('images/SupaplexSprites.png');
+}
+
+.scissors-rotate {
+    animation: scissors-rotate .5s steps(8) infinite;
+}
+
+.scissors-up {
+    animation: scissors-up 5s steps(8) infinite;
+}
+
+.scissors-down {
+    animation: scissors-down 5s steps(8) infinite;
+}
+
+.scissors-left {
+    animation: scissors-left 5s steps(8) alternate infinite;
+}
+
+.scissors-right {
+    animation: scissors-right 5s steps(8) alternate infinite;
+}
+
+@keyframes scissors-rotate {
+    from { background-position: 0px 0px }
+    to { background-position: -288px 0px }
+}
+
+@keyframes scissors-up {
+    from { background-position: 0px -36px }
+    to { background-position: -288px -36px }
+}
+
+@keyframes scissors-down {
+    from { background-position: 0px -72px }
+    to { background-position: -288px -72px }
+}
+
+@keyframes scissors-left {
+    from { background-position: 0px -108px }
+    to { background-position: -288px -108px }
+}
+
+@keyframes scissors-right {
+    from { background-position: 0px -144px }
+    to { background-position: -288px -144px }
+}
