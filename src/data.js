@@ -1,6 +1,11 @@
+import * as levels from './levels';
+
 export default function(cfg) {
   var defaults = {
-    tiles: ['s', 's', 's', 's']
+    frameRate: 1000,
+    frame: 0,
+    tiles: levels.read(levels.initial),
+    tweens: {}
   };
 
 

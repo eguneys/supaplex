@@ -1,4 +1,4 @@
-.sp-viewport-wrap {
+.sp-wrap {
     width: 100%;
     height: 100%;
 }
@@ -6,62 +6,177 @@
 .sp-viewport {
     background-size: cover;
     position: relative;
+    background: black;
     width: 100%;
     height: 100%;
+    border: 16px solid;
+    border-image: url('images/SupaplexBorder.png') 16;
 }
 
-.square {
+.tile {
+    background-image: url('images/Supaplex32.png');
     position: absolute;
-    background: black;
-    width: 36;
-    height: 36;
+    width: 32;
+    height: 32;
+}
+
+.zonks {
+    background-position: 0px -160px;
+    animation: zonks-rotate 1s steps(8) infinite;
+}
+
+@keyframes zonks-rotate {
+    from { background-position: 0px -160px; }
+    to { background-position: -256px -160px; }
+}
+
+
+.infotron {
+    animation: infotron-explode 1s steps(8) infinite;
+}
+
+@keyframes infotron-rotate {
+    from { background-position: 0px -192px; }
+    to { background-position: -256px -192px; }
+}
+
+@keyframes infotron-vanish {
+    from { background-position: 0px -224px; }
+    to { background-position: -256px -224px; }
+}
+
+@keyframes infotron-explode {
+    from { background-position: 0px -256px; }
+    to { background-position: -256px -256px; }
+}
+
+.explosion {
+    animation: explosion 1s steps(8) infinite;
+}
+
+@keyframes explosion {
+    from { background-position: 0px -288px; }
+    to { background-position: -256px -288px; }
+}
+
+.reddisk {
+    animation: reddisk-vanish 1s steps(8) infinite;
+}
+
+@keyframes reddisk-vanish {
+    from { background-position: 0px -320px; }
+    to { background-position: -256px -320px; }
+}
+
+.redterminal {
+    animation: redterminal-activate 1s steps(8) infinite;
+}
+
+@keyframes redterminal-activate {
+    from { background-position: 0px -352px; }
+    to { background-position: -256px -352px; }
+}
+
+.greenterminal {
+    animation: greenterminal-activate 1s steps(8) infinite;
+}
+
+@keyframes greenterminal-activate {
+    from { background-position: 0px -384px; }
+    to { background-position: -256px -384px; }
+}
+
+.base {
+    animation: base-bug 1s steps(6) infinite;
+}
+
+@keyframes base-vanish {
+    from { background-position: 0px -416px; }
+    to { background-position: -256px -416px; }
+}
+
+@keyframes base-bug {
+    from { background-position: 0px -448px; }
+    to { background-position: -192px -448px; }
+}
+
+.electron {
+    animation: electron 1s steps(8) infinite;
+}
+
+@keyframes electron {
+    from { background-position: 0px -576px; }
+    to { background-position: -256px -576px; }
 }
 
 .scissors {
-    background-image: url('images/SupaplexSprites.png');
+    animation: scissors-left 1s steps(8) infinite;
 }
 
-.scissors-rotate {
-    animation: scissors-rotate .5s steps(8) infinite;
+.scissors-go-up {
+    animation: scissors-up .016s steps(8) infinite;
 }
 
-.scissors-up {
-    animation: scissors-up 5s steps(8) infinite;
+.scissors-go-down {
+    animation: scissors-down .016s steps(8) infinite;
 }
 
-.scissors-down {
-    animation: scissors-down 5s steps(8) infinite;
+.scissors-go-left {
+    animation: scissors-left .016s steps(8) alternate infinite;
 }
 
-.scissors-left {
-    animation: scissors-left 5s steps(8) alternate infinite;
+.scissors-go-right {
+    animation: scissors-right .016s steps(8) alternate infinite;
 }
 
-.scissors-right {
-    animation: scissors-right 5s steps(8) alternate infinite;
+.scissors-up-up {
+    background-position: -32px 0px;
 }
 
-@keyframes scissors-rotate {
-    from { background-position: 0px 0px }
-    to { background-position: -288px 0px }
+.scissors-left-left {
+    background-position: -96px 0px;
+}
+
+.scissors-down-down {
+    background-position: -160px 0px;
+}
+
+.scissors-right-right {
+    background-position: -224px 0px;
+}
+
+.scissors-right-up, .scissors-up-right {
+    background-position: 0px 0px;
+}
+
+.scissors-down-right, .scissors-right-down {
+    background-position: -192px 0px;
+}
+
+.scissors-left-down, .scissors-down-left {
+    background-position: -128px 0px;
+}
+
+.scissors-up-left, .scissors-left-up {
+    background-position: -64px 0px;
 }
 
 @keyframes scissors-up {
-    from { background-position: 0px -36px }
-    to { background-position: -288px -36px }
+    from { background-position: 0px -32px }
+    to { background-position: -256px -32px }
 }
 
 @keyframes scissors-down {
-    from { background-position: 0px -72px }
-    to { background-position: -288px -72px }
+    from { background-position: 0px -64px }
+    to { background-position: -256px -64px }
 }
 
 @keyframes scissors-left {
-    from { background-position: 0px -108px }
-    to { background-position: -288px -108px }
+    from { background-position: 0px -96px }
+    to { background-position: -256px -96px }
 }
 
 @keyframes scissors-right {
-    from { background-position: 0px -144px }
-    to { background-position: -288px -144px }
+    from { background-position: 0px -96px }
+    to { background-position: -256px -96px }
 }
