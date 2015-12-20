@@ -13,15 +13,21 @@ export default function(cfg) {
       if (data.frame === tile.frame) return;
 
       if (tile.role === 1) {
+        levels.actRole1(data, pos);
+
         /*
-           if (tile.moving === 0) {
-           levels.move1(data, pos);
-           } else if (tile.moving === 1) {
-           levels.move2(data, pos);
-           } else {
-           levels.move0(data, pos);
-           }
+        if (tile.moving === 0)
+        {
+          levels.move1(data, pos)
+        } else if (tile.moving === 1) {
+          levels.move2(data, pos);
+        } else {
+          levels.move0(data, pos);
+        }
         */
+
+
+
         /*
            if (levels.isTurning(tile)) {
            levels.move3(data, pos);
@@ -29,11 +35,23 @@ export default function(cfg) {
            levels.move0(data, pos);
            }
         */
-        // scissors
-        // turning x
-        // moving still
-        // moving 1
-        // moving 2
+
+        // still
+          // can left
+            // turn left
+          // can ahead
+            // move 1
+          // can right
+            // turn right
+          // turn left
+        // turn
+          // can ahead
+            // move 1
+            // still
+        // move 1
+          // move 2
+        // move 2
+          // same as still
       }
     });
   };
