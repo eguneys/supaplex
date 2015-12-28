@@ -21,6 +21,31 @@ function classSet(classes) {
   return arr.join(' ');
 }
 
+function tileAnimation(role, tile){
+  const animations = {
+    1: (tile) => {
+      return tile.moving > 0 ?
+             [role, 'go', tile.facing].join('-'):
+             [role, tile.facing, tile.preFace].join('-');
+    },
+    10: (tile) => {
+      return tile.active > 0 ? `active`:'';
+    },
+    12: (tile) => {
+      return tile.moving > 0 ?
+             [role, 'go', tile.facing].join('-'):
+             [role].join('-');
+    }
+  };
+
+  const animation = animations[tile.role];
+
+  if (!animation) return '';
+
+  return animation(tile);
+}
+
+
 function tileClass(tile) {
   const roles = {
     0: 'empty',
@@ -32,26 +57,27 @@ function tileClass(tile) {
     6: 'redterminal',
     7: 'greenterminal',
     8: 'base',
-    9: 'electron'
+    9: 'electron',
+    10: 'base',
+    12: 'morphy'
   };
 
   if (!tile) return '';
   const role = roles[tile.role];
 
-  const animation = tile.moving > 0 ?
-                    [role, 'go', tile.facing].join('-'):
-                    [role, tile.facing, tile.preFace].join('-');
+  const animation = tileAnimation(role, tile);
 
   return `tile ${role} ${animation}`;
 }
 
-function renderTile(ctrl, pos) {
-  const key = pos[1] * 8 + pos[0];
-  const tile = ctrl.data.tiles[key];
+function renderTile(ctrl, tile, pos, key) {
 
-  if (!tile || tile.role === 0) return;
+  if (!tile || tile.role === 0) {
+    return;
+  }
 
   const attrs = {
+    key: tile.key,
     style: {
       left: pos[0] * 32,
       top: pos[1] * 32
@@ -72,11 +98,12 @@ function renderTile(ctrl, pos) {
 
 function renderContent(ctrl) {
   const children = [];
+  const electrons = [];
 
   const allPos = (function() {
     const ps = [];
-    for (var y = 0; y<8; y++) {
-      for (var x = 0; x<8; x++) {
+    for (var y = 0; y<14; y++) {
+      for (var x = 0; x<22; x++) {
         ps.push([x, y]);
       }
     }
@@ -85,17 +112,45 @@ function renderContent(ctrl) {
 
   const positions = allPos;
 
+  const viewOffset = ctrl.data.viewOffset;
+
   for (var i = 0; i < positions.length; i++) {
-    const newTile = renderTile(ctrl, positions[i])
-      if (newTile)
+    const pos = positions[i];
+    const key = (viewOffset[1] + pos[1]) * 60 + pos[0] + viewOffset[0];
+    const tile = ctrl.data.tiles[key];
+
+    const newTile = renderTile(ctrl, tile, pos, key);
+
+    if (tile.role === 9 || tile.role === 1) {
+      electrons.push(newTile);
+    } else if (newTile)
       children.push(newTile);
   }
 
-  return children;
+  const attrs = { style: {} };
+
+  if (ctrl.data.viewTween) {
+    attrs.style[transformProp()] = translate(ctrl.data.viewTween[1]);
+  }
+
+  return m('div', attrs,
+           m('div', {class: 'static'}, children),
+           m('div', {class: 'electrons'}, electrons));
 }
 
 function renderViewport(ctrl) {
-  return m('div', {class: 'sp-viewport' }, renderContent(ctrl));
+  const tileSize = ctrl.data.tileSize;
+  const viewHeight = ctrl.data.viewHeight * tileSize;
+  const viewWidth = ctrl.data.viewWidth * tileSize;
+  const attrs = {
+    class: 'sp-viewport',
+    style: {
+      height: viewHeight,
+      width: viewWidth
+    }
+  };
+
+  return m('div', attrs, renderContent(ctrl));
 }
 
 function renderBorderTop(ctrl) {
