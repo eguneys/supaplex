@@ -21,54 +21,86 @@ function classSet(classes) {
   return arr.join(' ');
 }
 
+function portAnimation(portClass) {
+  return (role, tile) => {
+    return [portClass].join(' ');
+  };
+}
+
 function tileAnimation(role, tile){
   const animations = {
-    1: (tile) => {
+    1: (role, tile) => {
       return tile.moving > 0 ?
              [role, 'go', tile.facing].join('-'):
              [role, tile.facing, tile.preFace].join('-');
     },
-    10: (tile) => {
+    10: (role, tile) => {
       return tile.active > 0 ? `active`:'';
     },
-    12: (tile) => {
+    12: (role, tile) => {
       return tile.moving > 0 ?
              [role, 'go', tile.facing].join('-'):
              [role].join('-');
-    }
+    },
+    13: portAnimation('port-all')
   };
 
   const animation = animations[tile.role];
 
   if (!animation) return '';
 
-  return animation(tile);
+  return animation(role, tile);
 }
 
+const roles = {
+  0: 'empty',
+  1: 'scissors',
+  2: 'zonks',
+  3: 'infotron',
+  4: 'explosion',
+  5: 'reddisk',
+  6: 'redterminal',
+  7: 'greenterminal',
+  8: 'base',
+  9: 'electron',
+  10: 'base',
+  12: 'morphy',
+  13: 'port',
+};
 
 function tileClass(tile) {
-  const roles = {
-    0: 'empty',
-    1: 'scissors',
-    2: 'zonks',
-    3: 'infotron',
-    4: 'explosion',
-    5: 'reddisk',
-    6: 'redterminal',
-    7: 'greenterminal',
-    8: 'base',
-    9: 'electron',
-    10: 'base',
-    12: 'morphy',
-    13: 'port-all',
-  };
-
   if (!tile) return '';
   const role = roles[tile.role];
 
   const animation = tileAnimation(role, tile);
 
   return `tile ${role} ${animation}`;
+}
+
+function tileChildren(ctrl, tile) {
+  if (tile.role === 13 && tile.porting > 0) {
+
+    const attrs = {
+      style: {
+        zIndex: -1
+      },
+      class: tileClass(tile.portTile)
+    };
+
+    if (ctrl.data.tweens) {
+      const tween = ctrl.data.tweens[`port${tile.key}`];
+
+      if (tween) {
+        attrs.style[transformProp()] = translate(tween[1]);
+      }
+    }
+
+    const portingMurphy = m('div', attrs);
+
+    return [portingMurphy];
+  }
+
+  return [];
 }
 
 function renderTile(ctrl, tile, pos, key) {
@@ -94,12 +126,15 @@ function renderTile(ctrl, tile, pos, key) {
     }
   }
 
-  return m('div', attrs);
+  const children = tileChildren(ctrl, tile);
+
+  return m('div', attrs, children);
 }
 
 function renderContent(ctrl) {
-  const children = [];
+  const ports = [];
   const electrons = [];
+  const eatables = [];
 
   const allPos = (function(width, height) {
     const ps = [];
@@ -122,10 +157,10 @@ function renderContent(ctrl) {
 
     const newTile = renderTile(ctrl, tile, pos, key);
 
-    if (tile.role === 9 || tile.role === 1) {
+    if (tile.role === 9 || tile.role === 1 || tile.role === 12) {
       electrons.push(newTile);
     } else if (newTile)
-      children.push(newTile);
+      ports.push(newTile);
   }
 
   const attrs = { style: {} };
@@ -135,8 +170,9 @@ function renderContent(ctrl) {
   }
 
   return m('div', attrs,
-           m('div', {class: 'static'}, children),
-           m('div', {class: 'electrons'}, electrons));
+           m('div', {class: 'eatables'}, eatables),
+           m('div', {class: 'electrons'}, electrons),
+           m('div', {class: 'ports'}, ports));
 }
 
 function renderViewport(ctrl) {

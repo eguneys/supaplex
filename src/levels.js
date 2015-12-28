@@ -115,6 +115,47 @@ function actRole(data, pos) {
 }
 
 /*
+   // port 1
+     // port 2
+   // port 2
+     // clear
+ */
+
+function decisionPort2(data, pos) {
+  port2(data, pos);
+}
+
+function decisionPortClear(data, pos) {
+  portClear(data, pos);
+}
+
+function port1(data, pos, dir, portPos) {
+  const tile = data.tiles[pos];
+  const portTile = data.tiles[portPos];
+
+  tile.frame = data.frame;
+  tile.porting = 1;
+  tile.portTile = portTile;
+  addTween(data, `port${tile.key}`, Move[dir].a);
+
+  tile.nextDecision = decisionPort2;
+}
+
+function port2(data, pos) {
+  const tile = data.tiles[pos];
+
+  tile.porting = 2;
+  tile.nextDecision = decisionPortClear;
+}
+
+function portClear(data, pos) {
+  const tile = data.tiles[pos];
+
+  tile.porting = 0;
+  delete tile.nextDecision;
+}
+
+/*
    // input
      // switch input
        // move 1
@@ -142,8 +183,11 @@ function decisionInput(data, pos) {
         morphyMove(data, pos, dir);
         return true;
       } else if (canPort(data, pos, dir)) {
-        const nextPos = posNeighbor(posNeighbor(pos, dir), dir);
+        const portPos = posNeighbor(pos, dir);
+        const nextPos = posNeighbor(portPos, dir);
         morphyMove(data, pos, dir, nextPos);
+
+        port1(data, portPos, dir, nextPos);
         return true;
       }
     }
@@ -476,9 +520,13 @@ function setChar(frame, tiles, pos, char) {
   char.frame = frame;
 }
 
+function addTween(data, key, arr) {
+  data.tweens[key] = [arr, arr];
+  data.tweens[key].start = data.lastUpdateTime;
+}
+
 function tweenCharBase(data, pos, arr) {
-  data.tweens[pos] = [arr, arr];
-  data.tweens[pos].start = data.lastUpdateTime;
+  addTween(data, pos, arr);
 }
 
 function moveCharBase(frame, tiles, pos, nextPos) {

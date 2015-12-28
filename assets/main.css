@@ -21,9 +21,11 @@
     background-position: -96px -608px;
 }
 
-.port-all {
+.port {
+}
+
+.port.port-all {
     background-position: -96px -544px;
-    z-index: 1;
 }
 
 .zonks {
