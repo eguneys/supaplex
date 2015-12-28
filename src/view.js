@@ -59,7 +59,8 @@ function tileClass(tile) {
     8: 'base',
     9: 'electron',
     10: 'base',
-    12: 'morphy'
+    12: 'morphy',
+    13: 'port-all',
   };
 
   if (!tile) return '';
