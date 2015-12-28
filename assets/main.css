@@ -1,6 +1,5 @@
 .sp-wrap {
-    width: 100%;
-    height: 100%;
+    border: gray solid;
 }
 
 .sp-viewport {

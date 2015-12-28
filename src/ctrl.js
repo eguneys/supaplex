@@ -44,17 +44,25 @@ export default function(cfg) {
       }
     });
 
-    const _tween = data.viewTween;
-    if (_tween) {
-    const _rest = 1 - (now - _tween.start) / (data.updateDuration * 2);
-    _tween[1] = [Math.round(_tween[0][0] * _rest),
-                Math.round(_tween[0][1] * _rest)];
+    if (data.viewTween) {
+      updateTween(data.viewTween, now, data.updateDuration);
+    }
 
-      if (_rest <= 0) {
-        delete data.viewTween;
-      }
+    if (data.edgeTween) {
+      updateTween(data.edgeTween, now, data.updateDuration);
     }
 
     data.tweens = newTweens;
   };
+}
+
+function updateTween(tween, now, duration) {
+  let rest = 1 - (now - tween.start) / (duration * 2);
+
+  if (rest < 0) {
+    rest = 0;
+  }
+
+  tween[1] = [Math.round(tween[0][0] * rest),
+              Math.round(tween[0][1] * rest)];
 }

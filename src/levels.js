@@ -45,9 +45,9 @@ function roleMaker() {
 
 const makeRole = roleMaker();
 
-const _initial = [8, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+const _initial = [8, 8, 8, 0, 0, 1, 0, 0, 0, 8,
+                 0, 8, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 8, 0, 0, 0, 0, 0, 0, 0,
                  0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
                  0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -163,6 +163,7 @@ function morphyMove(data, pos, facing) {
 
   data.morphyPosKey = nextPos;
 
+  const preMorphyPos = key2pos(pos);
   const morphyPos = key2pos(nextPos);
 
   const tileSize = data.tileSize;
@@ -171,10 +172,35 @@ function morphyMove(data, pos, facing) {
   const viewWidth = data.viewWidth;
   const viewHeight = data.viewHeight;
 
-  const viewOffset = [Math.min(mapWidth - viewWidth,
-                               Math.max(0, morphyPos[0] - 10)),
-                      Math.min(mapHeight - viewHeight,
-                               Math.max(0, morphyPos[1] - 5))];
+  function inBetween(min, max, val) {
+    return Math.max(Math.min(max, val), min);
+  }
+
+  const halfViewWidth = viewWidth / 2 - 1;
+  const halfViewHeight = viewHeight / 2 -1;
+
+  const leftEdge = halfViewWidth;
+  const rightEdge = mapWidth - halfViewWidth;
+  const topEdge = halfViewHeight;
+  const bottomEdge = mapHeight - halfViewHeight;
+
+  const edgeOffset = [inBetween(0, 2, morphyPos[0] - leftEdge) +
+                      inBetween(0, 1, morphyPos[0] - rightEdge),
+                      inBetween(0, 2, morphyPos[1] - topEdge) +
+                      inBetween(0, 1, morphyPos[1] - bottomEdge)];
+
+  const edgeDiff = [(edgeOffset[0] - data.edgeOffset[0]) * tileSize,
+                    (edgeOffset[1] - data.edgeOffset[1]) * tileSize];
+
+  data.edgeOffset = edgeOffset;
+
+  data.edgeTween = [edgeDiff, edgeDiff];
+  data.edgeTween.start = data.lastUpdateTime;
+
+  const viewOffset = [inBetween(0, mapWidth - viewWidth,
+                                morphyPos[0] - halfViewWidth - 2),
+                      inBetween(0, mapHeight - viewHeight,
+                                morphyPos[1] - halfViewHeight - 2)];
 
   const viewDiff = [(viewOffset[0] - data.viewOffset[0]) * tileSize,
                     (viewOffset[1] - data.viewOffset[1]) * tileSize];

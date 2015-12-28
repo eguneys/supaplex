@@ -100,15 +100,15 @@ function renderContent(ctrl) {
   const children = [];
   const electrons = [];
 
-  const allPos = (function() {
+  const allPos = (function(width, height) {
     const ps = [];
-    for (var y = 0; y<14; y++) {
-      for (var x = 0; x<22; x++) {
+    for (var y = 0; y<height; y++) {
+      for (var x = 0; x<width; x++) {
         ps.push([x, y]);
       }
     }
     return ps;
-  })();
+  })(ctrl.data.viewWidth, ctrl.data.viewHeight);
 
   const positions = allPos;
 
@@ -142,27 +142,51 @@ function renderViewport(ctrl) {
   const tileSize = ctrl.data.tileSize;
   const viewHeight = ctrl.data.viewHeight * tileSize;
   const viewWidth = ctrl.data.viewWidth * tileSize;
+
+  const edgeLeft = -1 * ctrl.data.edgeOffset[0] * tileSize;
+  const edgeTop = -1 * ctrl.data.edgeOffset[1] * tileSize;
+
   const attrs = {
     class: 'sp-viewport',
     style: {
+      zIndex: -1,
       height: viewHeight,
-      width: viewWidth
+      width: viewWidth,
+      left: edgeLeft,
+      top:edgeTop
     }
   };
+
+  if (ctrl.data.edgeTween) {
+    attrs.style[transformProp()] = translate(ctrl.data.edgeTween[1]);
+  }
 
   return m('div', attrs, renderContent(ctrl));
 }
 
-function renderBorderTop(ctrl) {
-  return m('div', {});
+function renderViewportWrap(ctrl) {
+  const tileSize = ctrl.data.tileSize;
+  const viewHeight = (ctrl.data.viewHeight - 2) * tileSize;
+  const viewWidth = (ctrl.data.viewWidth - 2) * tileSize;
+
+  const children = [renderViewport(ctrl)];
+
+  const attrs = {
+    class: 'sp-wrap',
+    style: {
+      height: viewHeight,
+      width: viewWidth,
+    }
+ 
+  };
+
+  return m('div', attrs, children);
 }
 
 function render(ctrl) {
-  const children = [renderBorderTop(ctrl), renderViewport(ctrl)];
+  const children = [renderViewportWrap(ctrl)];
 
-  return m('div',
-           {class: 'sp-wrap'},
-           children);
+  return m('div', children);
 }
 
 export default render;
