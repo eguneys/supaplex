@@ -160,12 +160,19 @@ function morphyMove(data, pos, facing) {
   const dir = Move[facing];
   const nextPos = pos + dir.v;
 
-
   data.morphyPosKey = nextPos;
 
   const preMorphyPos = key2pos(pos);
   const morphyPos = key2pos(nextPos);
 
+  viewportCenter(data, preMorphyPos, morphyPos);
+
+  tile.facing = facing;
+  tile.moving = 1;
+  tile.nextDecision = decisionMurphyMove2;
+}
+
+function viewportCenter(data, preMorphyPos, morphyPos) {
   const tileSize = data.tileSize;
   const mapWidth = data.mapWidth;
   const mapHeight = data.mapHeight;
@@ -209,10 +216,6 @@ function morphyMove(data, pos, facing) {
 
   data.viewTween = [viewDiff, viewDiff];
   data.viewTween.start = data.lastUpdateTime;
-
-  tile.facing = facing;
-  tile.moving = 1;
-  tile.nextDecision = decisionMurphyMove2;
 }
 
 function morphyMove2(data, pos) {
@@ -443,23 +446,29 @@ function setChar(frame, tiles, pos, char) {
   char.frame = frame;
 }
 
+function tweenCharBase(data, pos, arr) {
+  data.tweens[pos] = [arr, arr];
+  data.tweens[pos].start = data.lastUpdateTime;
+}
+
 function moveCharBase(frame, tiles, pos, nextPos) {
   const oldPos = tiles[nextPos];
   setChar(frame, tiles, nextPos, tiles[pos]);
   setChar(frame, tiles, pos, oldPos);
 }
 
+function _moveChar(data, pos, nextPos, dir) {
+  moveCharBase(data.frame, data.tiles, pos, nextPos);
+  tweenCharBase(data, nextPos, dir.a);
+}
+
 function moveChar(data, pos, dirS) {
   const dir = Move[dirS];
   const nextPos = pos + dir.v;
 
-  moveCharBase(data.frame, data.tiles, pos, nextPos);
-
-  const arr = dir.a;
-
-  data.tweens[nextPos] = [arr, arr];
-  data.tweens[nextPos].start = data.lastUpdateTime;
+  _moveChar(data, pos, nextPos, dir);
 }
+
 
 const Move = {
   left: {

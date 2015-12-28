@@ -9,7 +9,7 @@ export default function(cfg) {
     edgeOffset: [0, 0],
     mapWidth: 60,
     mapHeight: 24,
-    viewWidth: 30,
+    viewWidth: 26,
     viewHeight: 16,
     tileSize: 32,
     tweens: {},
