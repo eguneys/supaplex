@@ -30,12 +30,19 @@
 
 .zonks {
     background-position: 0px -160px;
-    animation: zonks-rotate 1s steps(8) infinite;
 }
 
-@keyframes zonks-rotate {
+.zonks-roll-left {
+    animation: zonks-roll 0.12s steps(5) reverse infinite;
+}
+
+.zonks-roll-right {
+    animation: zonks-roll 0.12s steps(5) infinite;
+}
+
+@keyframes zonks-roll {
     from { background-position: 0px -160px; }
-    to { background-position: -256px -160px; }
+    to { background-position: -160px -160px; }
 }
 
 
@@ -157,7 +164,7 @@
 }
 
 .electron {
-    animation: electron .32s steps(8) infinite;
+    animation: electron .24s steps(8) infinite;
 }
 
 @keyframes electron {
@@ -169,19 +176,19 @@
 }
 
 .scissors-go-up {
-    animation: scissors-up .16s steps(8) infinite;
+    animation: scissors-up .12s steps(8) infinite;
 }
 
 .scissors-go-down {
-    animation: scissors-down .16s steps(8) infinite;
+    animation: scissors-down .12s steps(8) infinite;
 }
 
 .scissors-go-left {
-    animation: scissors-left .16s steps(8) infinite;
+    animation: scissors-left .12s steps(8) infinite;
 }
 
 .scissors-go-right {
-    animation: scissors-right .16s steps(8) infinite;
+    animation: scissors-right .12s steps(8) infinite;
 }
 
 .scissors-up-up {
@@ -269,11 +276,11 @@
 }
 
 .morphy-go-right {
-    animation: morphy-go-right .32s steps(7) infinite;
+    animation: morphy-go-right .24s steps(7) infinite;
 }
 
 .morphy-go-left, .morphy-go-up, .morphy-go-down {
-    animation: morphy-go-left .32s steps(7) infinite;
+    animation: morphy-go-left .24s steps(7) infinite;
 }
 
 .morphy-exit {

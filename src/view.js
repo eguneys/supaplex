@@ -34,13 +34,22 @@ function tileAnimation(role, tile){
              [role, 'go', tile.facing].join('-'):
              [role, tile.facing, tile.preFace].join('-');
     },
+    2: (role, tile) => {
+      if (tile.rolling > 0) {
+        return [role, 'roll', tile.facing].join('-');
+      }
+      return '';
+    },
     10: (role, tile) => {
       return tile.active > 0 ? `active`:'';
     },
     12: (role, tile) => {
-      return tile.moving > 0 ?
-             [role, 'go', tile.facing].join('-'):
-             [role].join('-');
+      if (tile.pushing > 0) {
+        return [role, 'push', tile.facing].join('-');
+      } else if (tile.moving > 0) {
+        return [role, 'go', tile.facing].join('-');
+      }
+      return '';
     },
     13: portAnimation('port-all')
   };
@@ -65,7 +74,7 @@ const roles = {
   9: 'electron',
   10: 'base',
   12: 'morphy',
-  13: 'port',
+  13: 'port'
 };
 
 function tileClass(tile) {

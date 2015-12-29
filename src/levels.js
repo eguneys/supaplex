@@ -1,3 +1,5 @@
+import * as rolls from './rolls';
+
 const Role = {
   1: {
     role: 1,
@@ -5,6 +7,12 @@ const Role = {
     preFace: 'left',
     moving: 0,
     nextDecision: decisionTurn
+  },
+  2: {
+    role: 2,
+    moving: 0,
+    pushable: true,
+    nextDecision: rolls.decisionFall
   },
   9: {
     role: 9,
@@ -28,7 +36,7 @@ const Role = {
     role: 13,
     portable: {left: true, right: true, up: true, down: true }
   }
-}
+};
 
 function roleMaker() {
   let id = 1;
@@ -44,16 +52,16 @@ function roleMaker() {
     });
 
     return result;
-  }
+  };
 }
 
 const makeRole = roleMaker();
 
-const _initial = [13, 0, 13, 0, 13, 1, 13, 0, 13, 0,
-                 0, 0, 0, 13, 0, 0, 0, 0, 0, 0,
-                 0, 0, 8, 0, 13, 0, 0, 0, 0, 0,
-                 13, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-                 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+const _initial = [0, 0, 0, 0, 0, 1, 13, 0, 13, 0,
+                 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+                 0, 8, 8, 8, 13, 8, 8, 8, 8, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const initial = enhance(_initial);
@@ -156,16 +164,17 @@ function portClear(data, pos) {
 }
 
 /*
-   // input
+   // morphyStand // move 2 // push 2 // push move 2
      // switch input
-       // move 1
-      // clear
-   // clear
-     // input
-   // move 1
+       // move
+       // push
+       // stand
+   // move
      // move 2
-   // move 2
-     // input
+   // push
+     // push 2
+   // push move
+     // push move 2
  */
 
 
@@ -181,16 +190,24 @@ function decisionInput(data, pos) {
     if (inputs[dir]) {
       if (canGo(data, pos, dir)) {
         morphyMove(data, pos, dir);
-        return true;
       } else if (canPort(data, pos, dir)) {
         const portPos = posNeighbor(pos, dir);
         const nextPos = posNeighbor(portPos, dir);
         morphyMove(data, pos, dir, nextPos);
 
         port1(data, portPos, dir, nextPos);
-        return true;
+      } else if (canPush(data, pos, dir)) {
+        if (canPushMove(data, pos, dir)) {
+          morphyPushMove(data, pos, dir);
+        } else {
+          morphyPush(data, pos, dir);
+        }
+      } else {
+        return false;
       }
+      return true;
     }
+    return false;
   });
 
   if (!handled) {
@@ -202,19 +219,27 @@ function decisionMurphyMove2(data, pos) {
   morphyMove2(data, pos);
 }
 
+function decisionMurphyPushMove2(data, pos) {
+  morphyPushMove2(data, pos);
+}
+
+function decisionMurphyPush2(data, pos) {
+  morphyPush2(data, pos);
+}
+
 function morphyStand(data, pos) {
   const tile = data.tiles[pos];
 
+  tile.pushing = 0;
   tile.moving = 0;
   tile.nextDecision = decisionInput;
 }
 
-function morphyMove(data, pos, facing, nextPos) {
-  const tile = data.tiles[pos];
+function morphyMoveBase(data, pos, facing, nextPos) {
   const dir = Move[facing];
   nextPos = nextPos || (pos + dir.v);
 
-  moveChar(data, pos, dir, nextPos);
+  moveChar(data, pos, facing, nextPos);
 
   data.morphyPosKey = nextPos;
 
@@ -222,16 +247,59 @@ function morphyMove(data, pos, facing, nextPos) {
   const morphyPos = key2pos(nextPos);
 
   viewportCenter(data, preMorphyPos, morphyPos);
+}
 
-  tile.facing = facing;
+function morphyMove(data, pos, dir, nextPos) {
+  const tile = data.tiles[pos];
+
+  morphyMoveBase(data, pos, dir, nextPos);
+
+  tile.facing = dir;
+  tile.pushing = 0;
   tile.moving = 1;
   tile.nextDecision = decisionMurphyMove2;
+}
+
+ function morphyPush(data, pos, dir) {
+  const tile = data.tiles[pos];
+
+  tile.facing = dir;
+  tile.moving = 0;
+  tile.pushing = 1;
+  tile.nextDecision = decisionMurphyPush2;
+}
+
+function morphyPushMove(data, pos, dir) {
+  const tile = data.tiles[pos];
+
+  const pushPos = posNeighbor(pos, dir);
+
+  rolls.roll1(data, pushPos, dir);
+  morphyMoveBase(data, pos, dir);
+
+  tile.facing = dir;
+  tile.pushing = 3;
+  tile.nextDecision = decisionMurphyPushMove2;
 }
 
 function morphyMove2(data, pos) {
   const tile = data.tiles[pos];
 
   tile.moving = 2;
+  tile.nextDecision = decisionInput;
+}
+
+function morphyPush2(data, pos) {
+  const tile = data.tiles[pos];
+
+  tile.pushing = 2;
+  tile.nextDecision = decisionInput;
+}
+
+function morphyPushMove2(data, pos) {
+  const tile = data.tiles[pos];
+
+  tile.pushing = 4;
   tile.nextDecision = decisionInput;
 }
 
@@ -282,24 +350,15 @@ function viewportCenter(data, preMorphyPos, morphyPos) {
 }
 
 /*
-   // debug
+   // debug // debug start
      // can bug
        // bug start
        // debug
-   // bug start
-     // same as bug
-   // bug
+   // bug  // bug start
      // can debug
        // debug start
        // bug
-   // debug start
-     // same as debug
  */
-function actRole10(data, pos) {
-  const tile = data.tiles[pos];
-  tile.nextDecision(data, pos);
-}
-
 function decisionDebug(data, pos) {
   const tile = data.tiles[pos];
 
@@ -359,22 +418,20 @@ function canDebug(tile) {
 }
 
 /*
-        // still
-          // can left
-            // turn left
-          // can ahead
-            // move 1
-          // can right
-            // turn right
-          // turn left
-        // turn
-          // can ahead
-            // move 1
-            // still
-        // move 1
-          // move 2
-        // move 2
-          // same as still
+  // still // move 2
+    // can left
+      // turn left
+    // can ahead
+      // move 1
+    // can right
+      // turn right
+    // turn left
+  // turn
+    // can ahead
+      // move 1
+      // still
+  // move 1
+    // move 2
  */
 function actRole1(data, pos) {
   const tile = data.tiles[pos];
@@ -392,7 +449,7 @@ function decisionTurn(data, pos) {
   if (canGo(data, pos, dirLeft)) {
     turn(data, pos, dirLeft);
   } else if (canGo(data, pos, dirAhead)) {
-    move1(data, pos)
+    move1(data, pos);
   } else if (canGo(data, pos, dirRight)) {
     turn(data, pos, dirRight);
   } else {
@@ -430,7 +487,7 @@ function move1(data, pos) {
   const tile = data.tiles[pos];
   const facing = tile.facing;
 
-  moveChar(data, pos, Move[tile.facing]);
+  moveChar(data, pos, tile.facing);
 
   tile.moving = 1;
   tile.nextDecision = decisionMove2;
@@ -454,15 +511,26 @@ function turn(data, pos, dir) {
   tile.nextDecision = decisionMove;
 }
 
-function canPort(data, pos, dir) {
+function canGo(data, pos, dir) {
   const rows = data.mapWidth;
   const cols = data.mapHeight;
   const mapLength = rows * cols;
 
   const neighbor = posNeighbor(pos, dir);
 
-  if (neighbor < 0 || neighbor >= mapLength ||
-      (isHorizontal(dir) && !isSameRow(rows, pos, neighbor))) {
+
+  if (!isLegitNeighbor(data, pos, dir, neighbor)) {
+        return false;
+  }
+
+  const tile = data.tiles[neighbor];
+  return tile.role === 0;
+}
+
+function canPort(data, pos, dir) {
+  const neighbor = posNeighbor(pos, dir);
+
+  if (!isLegitNeighbor(data, pos, dir, neighbor)) {
         return false;
   }
 
@@ -474,21 +542,29 @@ function canPort(data, pos, dir) {
   return canGo(data, neighbor, dir);
 }
 
-function canGo(data, pos, dir) {
-  const rows = data.mapWidth;
-  const cols = data.mapHeight;
-  const mapLength = rows * cols;
+function canFall(data, pos) {
+  return canGo(data, pos, 'down');
+}
 
+function canPushMove(data, pos, dir) {
+  const tile = data.tiles[pos];
+
+  return tile.pushing === 2;
+}
+
+function canPush(data, pos, dir) {
   const neighbor = posNeighbor(pos, dir);
-
-
-  if (neighbor < 0 || neighbor >= mapLength ||
-      (isHorizontal(dir) && !isSameRow(rows, pos, neighbor))) {
-        return false;
+  if (!isLegitNeighbor(data, pos, dir, neighbor)) {
+    return false;
   }
 
   const tile = data.tiles[neighbor];
-  return tile.role === 0;
+
+  if (!tile.pushable) {
+    return false;
+  }
+
+  return canGo(data, neighbor, dir);
 }
 
 function isHorizontal(dir) {
@@ -501,6 +577,15 @@ function isSameRow(rows, pos1, pos2) {
 
 function row(rows, pos) {
   return Math.floor(pos / rows);
+}
+
+function isLegitNeighbor(data, pos, dir, neighbor) {
+  const rows = data.mapWidth;
+  const cols = data.mapHeight;
+  const mapLength = rows * cols;
+
+  return !(neighbor < 0 || neighbor >= mapLength ||
+           (isHorizontal(dir) && !isSameRow(rows, pos, neighbor)));
 }
 
 function posNeighbor(pos, dir) {
@@ -535,7 +620,8 @@ function moveCharBase(frame, tiles, pos, nextPos) {
   setChar(frame, tiles, pos, oldPos);
 }
 
-function moveChar(data, pos, dir, nextPos) {
+function moveChar(data, pos, dirS, nextPos) {
+  const dir = Move[dirS];
   nextPos = nextPos || pos + dir.v;
 
   moveCharBase(data.frame, data.tiles, pos, nextPos);
@@ -570,7 +656,7 @@ const moves = ['left', 'down', 'right', 'up'];
 export {
   initial,
   read,
-  actRole1,
-  actRole10,
-  actRole
+  actRole,
+  moveChar,
+  canFall
 };
