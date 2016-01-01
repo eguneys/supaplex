@@ -46,6 +46,15 @@ function tileAnimation(role, tile){
         const hanged = tile.rolling === 3?'hanged ':'';
         return hanged + [role, 'roll', tile.facing].join('-');
       }
+      if (tile.vanishing > 0) {
+        return 'vanish';
+      }
+      return '';
+    },
+    8: (role, tile) => {
+      if (tile.vanishing > 0) {
+        return 'vanish';
+      }
       return '';
     },
     10: (role, tile) => {
@@ -56,6 +65,8 @@ function tileAnimation(role, tile){
         return [role, 'push', tile.facing].join('-');
       } else if (tile.moving > 0) {
         return [role, 'go', tile.facing].join('-');
+      } else if (tile.snapping > 0) {
+        return [role, 'snap', tile.facing].join('-');
       }
       return '';
     },
@@ -95,9 +106,10 @@ function tileClass(tile) {
 }
 
 function tileChildren(ctrl, tile) {
+  let attrs;
   if (tile.role === 13 && tile.porting > 0) {
 
-    const attrs = {
+    attrs = {
       style: {
         zIndex: -1
       },
@@ -114,16 +126,32 @@ function tileChildren(ctrl, tile) {
 
     const portingMurphy = m('div', attrs);
 
-    return [portingMurphy];
+    return portingMurphy;
   }
-
   return [];
 }
 
-function renderTile(ctrl, tile, pos, key) {
+function tileSiblings(ctrl, tile, pos, tileElement) {
+  if (tile.role === 12 && tile.eatingRole > 0) {
+    const attrs = {
+      style: {
+        left: pos[0] * 32,
+        top: pos[1] * 32
+      },
+      class: `tile ${roles[tile.eatingRole]}`
+    };
 
+    const eatenTile = m('div', attrs);
+
+    return m('div', {}, [eatenTile, tileElement]);
+  }
+
+  return tileElement;
+}
+
+function renderTile(ctrl, tile, pos, key) {
   if (!tile || tile.role === 0) {
-    return;
+    return null;
   }
 
   const attrs = {
@@ -133,7 +161,7 @@ function renderTile(ctrl, tile, pos, key) {
       top: pos[1] * 32
     },
     class: tileClass(tile)
-  }
+  };
 
   if (ctrl.data.tweens) {
     const tween = ctrl.data.tweens[key];
@@ -145,7 +173,15 @@ function renderTile(ctrl, tile, pos, key) {
 
   const children = tileChildren(ctrl, tile);
 
-  return m('div', attrs, children);
+  const tileElement =  m('div', attrs, children);
+
+  const siblings = tileSiblings(ctrl, tile, pos, tileElement);
+
+  return siblings;
+}
+
+function byKey(tile1, tile2) {
+  return tile1.attrs.key - tile2.attrs.key;
 }
 
 function renderContent(ctrl) {
@@ -174,7 +210,9 @@ function renderContent(ctrl) {
 
     const newTile = renderTile(ctrl, tile, pos, key);
 
-    if (tile.role === 9 || tile.role === 1 || tile.role === 12) {
+    if (tile.role === 12) {
+      eatables.push(newTile);
+    } else if (tile.role === 9 || tile.role === 1) {
       electrons.push(newTile);
     } else if (newTile)
       ports.push(newTile);
@@ -187,9 +225,9 @@ function renderContent(ctrl) {
   }
 
   return m('div', attrs,
-           m('div', {class: 'eatables'}, eatables),
-           m('div', {class: 'electrons'}, electrons),
-           m('div', {class: 'ports'}, ports));
+           m('div', {class: 'eatables'}, eatables.sort(byKey)),
+           m('div', {class: 'electrons'}, electrons.sort(byKey)),
+           m('div', {class: 'ports'}, ports.sort(byKey)));
 }
 
 function renderViewport(ctrl) {

@@ -1,46 +1,27 @@
 import k from 'mousetrap';
 
 function preventing(f) {
-  return function(e) {
+  return function(e, keys) {
     if (e.preventDefault) {
       e.preventDefault();
     } else {
       // internet explorer
       e.returnValue = false;
     }
-    f();
+    f(keys);
   };
 }
 
 
 export default function init(ctrl) {
-  k.bind('left', preventing(() => {
-    ctrl.move('left');
-  }), 'keydown');
-  k.bind('right', preventing(() => {
-    ctrl.move('right');
-  }), 'keydown');
-  k.bind('up', preventing(() => {
-    ctrl.move('up');
-  }), 'keydown');
-  k.bind('down', preventing(() => {
-    ctrl.move('down');
-  }), 'keydown');
+  const keys = ['left', 'right', 'up', 'down', 'space'];
 
-  k.bind('left', preventing(() => {
-    ctrl.clearMove('left');
-  }), 'keyup');
-
-  k.bind('right', preventing(() => {
-    ctrl.clearMove('right');
-  }), 'keyup');
-
-  k.bind('down', preventing(() => {
-    ctrl.clearMove('down');
-  }), 'keyup');
-
-  k.bind('up', preventing(() => {
-    ctrl.clearMove('up');
-  }), 'keyup');
-
+  keys.map((dir) => {
+    k.bind(dir, preventing(() => {
+      ctrl.move(dir);
+    }), 'keydown');
+    k.bind([dir], preventing(() => {
+      ctrl.clearMove(dir);
+    }), 'keyup');
+  });
 };

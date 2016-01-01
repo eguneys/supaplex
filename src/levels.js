@@ -19,8 +19,12 @@ const Role = {
     role: 3,
     moving: 0,
     round: true,
-    pushable: true,
+    eatable: true,
     nextDecision: rolls.decisionFall
+  },
+  8: {
+    role: 8,
+    eatable: true
   },
   9: {
     role: 9,
@@ -68,14 +72,14 @@ const makeRole = roleMaker();
 const _initial = [2, 0, 3, 0, 0, 0, 0, 0, 0, 0,
                   2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   2, 0, 2, 0, 0, 0, 0, 0, 0, 0,
-                  8, 0, 0, 2, 0, 0, 0, 0, 0, 0,
-                  8, 2, 2, 0, 3, 1, 13, 0, 13, 0,
+                  9, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+                  9, 2, 2, 0, 3, 1, 13, 0, 13, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  8, 0, 0, 0, 13, 8, 8, 8, 8, 0,
+                  9, 0, 0, 0, 13, 8, 8, 8, 8, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const initial = enhance(_initial);
@@ -146,7 +150,47 @@ function clearTrail(data, pos) {
     const trailTile = data.tiles[tile.trailPos];
     trailTile.isTrail = false;
     delete tile.trailPos;
+    tile.moving = 0;
+    tile.eatingRole = 0;
   }
+  if (tile.snapping === 2) {
+    tile.snapping = 0;
+  }
+}
+
+
+/* // vanish 1
+     // vanish 2
+   // vanish 2
+     // clear
+ */
+
+function decisionVanish2(data, pos) {
+  vanish2(data, pos);
+}
+
+function decisionVanishClear(data, pos) {
+  vanishClear(data, pos);
+}
+
+function vanish1(data, pos) {
+  const tile = data.tiles[pos];
+
+  tile.vanishing = 1;
+  tile.nextDecision = decisionVanish2;
+}
+
+function vanish2(data, pos) {
+  const tile = data.tiles[pos];
+  tile.vanishing = 2;
+  tile.nextDecision = decisionVanishClear;
+}
+
+function vanishClear(data, pos) {
+  // const tile = data.tiles[pos];
+  // tile.vanishing = 0;
+  // delete tile.nextDecision;
+  data.tiles[pos] = makeRole(0);
 }
 
 /*
@@ -191,7 +235,7 @@ function portClear(data, pos) {
 }
 
 /*
-   // morphyStand // move 2 // push 2 // push move 2
+   // morphyStand // move 2 // push 2 // push move 2 // eat move 2
      // switch input
        // move
        // push
@@ -202,6 +246,8 @@ function portClear(data, pos) {
      // push 2
    // push move
      // push move 2
+   // eat move
+     // eat move 2
  */
 
 
@@ -211,11 +257,18 @@ function decisionInput(data, pos) {
   const inputs = data.inputs;
 
   const dirs = ['left', 'right', 'up', 'down'];
+  const space = 'space';
 
   let handled =
   dirs.some((dir) => {
     if (inputs[dir]) {
-      if (canGo(data, pos, dir)) {
+      if (inputs[space]) {
+        if(canSnap(data, pos, dir)) {
+          morphySnap(data, pos, dir);
+        } else {
+          return false;
+        }
+      } else if (canGo(data, pos, dir)) {
         morphyMove(data, pos, dir);
       } else if (canPort(data, pos, dir)) {
         const portPos = posNeighbor(pos, dir);
@@ -229,6 +282,8 @@ function decisionInput(data, pos) {
         } else {
           morphyPush(data, pos, dir);
         }
+      } else if (canEat(data, pos, dir)) {
+        morphyEatMove(data, pos, dir);
       } else {
         return false;
       }
@@ -254,11 +309,14 @@ function decisionMurphyPush2(data, pos) {
   morphyPush2(data, pos);
 }
 
+function decisionMurphySnap2(data, pos) {
+  morphySnap2(data, pos);
+}
+
 function morphyStand(data, pos) {
   const tile = data.tiles[pos];
 
   tile.pushing = 0;
-  tile.moving = 0;
   tile.nextDecision = decisionInput;
 }
 
@@ -290,7 +348,6 @@ function morphyMove(data, pos, dir, nextPos) {
   const tile = data.tiles[pos];
 
   tile.facing = dir;
-  tile.moving = 0;
   tile.pushing = 1;
   tile.nextDecision = decisionMurphyPush2;
 }
@@ -307,6 +364,37 @@ function morphyPushMove(data, pos, dir) {
   tile.pushing = 3;
   tile.moving = 1;
   tile.nextDecision = decisionMurphyPushMove2;
+}
+
+function morphyEatMove(data, pos, dir) {
+  const tile = data.tiles[pos];
+
+  const eatPos = posNeighbor(pos, dir);
+  const eatRole = data.tiles[eatPos].role;
+
+  data.tiles[eatPos] = makeRole(0);
+
+  morphyMoveBase(data, pos, dir);
+
+  tile.facing = dir;
+  tile.pushing = 0;
+  tile.moving = 1;
+  tile.eatingRole = eatRole;
+  tile.nextDecision = decisionMurphyMove2;
+}
+
+function morphySnap(data, pos, dir) {
+  const tile = data.tiles[pos];
+
+  const snapPos = posNeighbor(pos, dir);
+  const snapTile = data.tiles[snapPos];
+
+  vanish1(data, snapPos);
+
+  tile.facing = dir;
+  tile.snapping = 1;
+  tile.pushing = 0;
+  tile.nextDecision = decisionMurphySnap2;
 }
 
 function morphyMove2(data, pos) {
@@ -328,6 +416,12 @@ function morphyPushMove2(data, pos) {
 
   tile.pushing = 4;
   tile.moving = 2;
+  tile.nextDecision = decisionInput;
+}
+
+function morphySnap2(data, pos) {
+  const tile = data.tiles[pos];
+  tile.snapping = 2;
   tile.nextDecision = decisionInput;
 }
 
@@ -613,6 +707,21 @@ function canPush(data, pos, dir) {
   }
 
   return canGo(data, neighbor, dir);
+}
+
+function canEat(data, pos, dir) {
+  const neighbor = posNeighbor(pos, dir);
+  if (!isLegitNeighbor(data, pos, dir, neighbor)) {
+    return false;
+  }
+
+  const tile = data.tiles[neighbor];
+
+  return tile.eatable && !tile.moving;
+}
+
+function canSnap(data, pos, dir) {
+  return canEat(data, pos, dir);
 }
 
 function isHorizontal(dir) {

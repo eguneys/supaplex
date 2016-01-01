@@ -65,6 +65,10 @@
     animation-play-state: paused;
 }
 
+.infotron.vanish {
+    animation: infotron-vanish .24s steps(8);
+}
+
 .infotron-explode {
     animation: infotron-explode 1s steps(8) infinite;
 }
@@ -129,7 +133,7 @@
 }
 
 .base.vanish {
-    animation: base-vanish .5s steps(8) infinite;
+    animation: base-vanish .24s steps(8) infinite;
 }
 
 @keyframes base-vanish {
@@ -266,19 +270,19 @@
     background-position: 0px -608px;
 }
 
-.morphy-right {
+.morphy-snap-right {
     background-position: 0px -672px;
 }
 
-.morphy-left {
+.morphy-snap-left {
     background-position: -32px -672px;
 }
 
-.morphy-up {
+.morphy-snap-up {
     background-position: -64px -672px;
 }
 
-.morphy-down {
+.morphy-snap-down {
     background-position: -96px -672px;
 }
 
