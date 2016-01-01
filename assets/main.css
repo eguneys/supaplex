@@ -40,17 +40,36 @@
     animation: zonks-roll 0.12s steps(5) infinite;
 }
 
+.zonks-roll-left.hanged, .zonks-roll-right.hanged {
+    animation-play-state: paused;
+}
+
 @keyframes zonks-roll {
     from { background-position: 0px -160px; }
     to { background-position: -160px -160px; }
 }
 
-
 .infotron {
+    background-position: 0px -192px;   
+}
+
+.infotron-roll-left {
+    animation: infotron-roll 0.24s steps(8) reverse infinite;
+}
+
+.infotron-roll-right {
+    animation: infotron-roll 0.24s steps(8) infinite;
+}
+
+.infotron-roll-left.hanged, .infotron-roll-right.hanged {
+    animation-play-state: paused;
+}
+
+.infotron-explode {
     animation: infotron-explode 1s steps(8) infinite;
 }
 
-@keyframes infotron-rotate {
+@keyframes infotron-roll {
     from { background-position: 0px -192px; }
     to { background-position: -256px -192px; }
 }

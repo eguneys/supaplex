@@ -2,7 +2,7 @@ import * as levels from './levels';
 
 export default function(cfg) {
   var defaults = {
-    updateDuration: 60,
+    updateDuration: 114,
     frame: 0,
     tiles: levels.read(levels.initial),
     viewOffset: [0, 0],

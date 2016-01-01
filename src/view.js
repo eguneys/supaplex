@@ -15,7 +15,7 @@ function classSet(classes) {
   const arr = [];
 
   for (var i in classes) {
-    if (classes[i]) arr.push[i];
+    if (classes[i]) arr.push(i);
   }
 
   return arr.join(' ');
@@ -36,7 +36,15 @@ function tileAnimation(role, tile){
     },
     2: (role, tile) => {
       if (tile.rolling > 0) {
-        return [role, 'roll', tile.facing].join('-');
+        const hanged = tile.rolling === 3?'hanged ':'';
+        return hanged + [role, 'roll', tile.facing].join('-');
+      }
+      return '';
+    },
+    3: (role, tile) => {
+      if (tile.rolling > 0) {
+        const hanged = tile.rolling === 3?'hanged ':'';
+        return hanged + [role, 'roll', tile.facing].join('-');
       }
       return '';
     },
@@ -195,7 +203,6 @@ function renderViewport(ctrl) {
   const attrs = {
     class: 'sp-viewport',
     style: {
-      zIndex: -1,
       height: viewHeight,
       width: viewWidth,
       left: edgeLeft,

@@ -11,6 +11,14 @@ const Role = {
   2: {
     role: 2,
     moving: 0,
+    round: true,
+    pushable: true,
+    nextDecision: rolls.decisionFall
+  },
+  3: {
+    role: 3,
+    moving: 0,
+    round: true,
     pushable: true,
     nextDecision: rolls.decisionFall
   },
@@ -57,12 +65,18 @@ function roleMaker() {
 
 const makeRole = roleMaker();
 
-const _initial = [0, 0, 0, 0, 0, 1, 13, 0, 13, 0,
-                 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
-                 0, 8, 8, 8, 13, 8, 8, 8, 8, 0,
+const _initial = [2, 0, 3, 0, 0, 0, 0, 0, 0, 0,
+                  2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  2, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+                  8, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+                  8, 2, 2, 0, 3, 1, 13, 0, 13, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                  8, 0, 0, 0, 13, 8, 8, 8, 8, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const initial = enhance(_initial);
 
@@ -83,7 +97,7 @@ function enhance(arr) {
 
   function cloneAt(I, J) {
     for (var i = 0; i<10; i++) {
-      for (var j = 0; j < 4; j++) {
+      for (var j = 0; j < 12; j++) {
         var dstKey = (j + J) * 60 + i + I;
         var srcKey = j * 10 + i;
 
@@ -93,16 +107,20 @@ function enhance(arr) {
   }
 
   for (var i = 0; i<60; i+=10) {
-    for (var j = 0; j<24;j+= 4) {
+    for (var j = 0; j<24;j+= 12) {
       cloneAt(i, j);
     }
   }
 
-  result[0] = 12;
+  result[pos2key([1, 7])] = 12;
 
   return result;
 }
 
+
+function pos2key(pos) {
+  return pos[1] * 60 + pos[0];
+}
 
 function key2pos(key) {
   return [key % 60, Math.floor(key / 60)];
@@ -119,6 +137,15 @@ function actRole(data, pos) {
   const tile = data.tiles[pos];
   if (tile.nextDecision) {
     tile.nextDecision(data, pos);
+  }
+}
+
+function clearTrail(data, pos) {
+  const tile = data.tiles[pos];
+  if (tile.moving === 2) {
+    const trailTile = data.tiles[tile.trailPos];
+    trailTile.isTrail = false;
+    delete tile.trailPos;
   }
 }
 
@@ -243,10 +270,9 @@ function morphyMoveBase(data, pos, facing, nextPos) {
 
   data.morphyPosKey = nextPos;
 
-  const preMorphyPos = key2pos(pos);
   const morphyPos = key2pos(nextPos);
 
-  viewportCenter(data, preMorphyPos, morphyPos);
+  viewportCenter(data, morphyPos);
 }
 
 function morphyMove(data, pos, dir, nextPos) {
@@ -279,6 +305,7 @@ function morphyPushMove(data, pos, dir) {
 
   tile.facing = dir;
   tile.pushing = 3;
+  tile.moving = 1;
   tile.nextDecision = decisionMurphyPushMove2;
 }
 
@@ -300,10 +327,11 @@ function morphyPushMove2(data, pos) {
   const tile = data.tiles[pos];
 
   tile.pushing = 4;
+  tile.moving = 2;
   tile.nextDecision = decisionInput;
 }
 
-function viewportCenter(data, preMorphyPos, morphyPos) {
+function viewportCenter(data, morphyPos) {
   const tileSize = data.tileSize;
   const mapWidth = data.mapWidth;
   const mapHeight = data.mapHeight;
@@ -524,7 +552,7 @@ function canGo(data, pos, dir) {
   }
 
   const tile = data.tiles[neighbor];
-  return tile.role === 0;
+  return tile.role === 0 && !tile.isTrail;
 }
 
 function canPort(data, pos, dir) {
@@ -544,6 +572,26 @@ function canPort(data, pos, dir) {
 
 function canFall(data, pos) {
   return canGo(data, pos, 'down');
+}
+
+function canRoll(data, pos, dir) {
+  const belowPos = posNeighbor(pos, 'down');
+  const rollPos = posNeighbor(pos, dir);
+
+  if (!isLegitNeighbor(data, pos, dir, rollPos) ||
+      !isLegitNeighbor(data, pos, 'down', belowPos)) {
+        return false;
+  }
+
+  const belowTile = data.tiles[belowPos];
+
+  if (!belowTile.round ||
+      belowTile.falling > 0 ||
+      belowTile.rolling > 0) {
+    return false;
+  }
+
+  return canGo(data, pos, dir) && canGo(data, rollPos, 'down');
 }
 
 function canPushMove(data, pos, dir) {
@@ -614,10 +662,14 @@ function tweenCharBase(data, pos, arr) {
   addTween(data, pos, arr);
 }
 
-function moveCharBase(frame, tiles, pos, nextPos) {
-  const oldPos = tiles[nextPos];
-  setChar(frame, tiles, nextPos, tiles[pos]);
-  setChar(frame, tiles, pos, oldPos);
+function moveCharBase(frame, tiles, srcPos, dstPos) {
+  const srcTile = tiles[srcPos];
+  const dstTile = tiles[dstPos];
+  setChar(frame, tiles, dstPos, srcTile);
+  setChar(frame, tiles, srcPos, dstTile);
+
+  srcTile.trailPos = srcPos;
+  dstTile.isTrail = true;
 }
 
 function moveChar(data, pos, dirS, nextPos) {
@@ -657,6 +709,8 @@ export {
   initial,
   read,
   actRole,
+  clearTrail,
   moveChar,
-  canFall
+  canFall,
+  canRoll
 };
