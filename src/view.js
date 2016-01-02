@@ -28,51 +28,6 @@ function portAnimation(portClass) {
 }
 
 function tileAnimation(role, tile){
-  const animations = {
-    1: (role, tile) => {
-      return tile.moving > 0 ?
-             [role, 'go', tile.facing].join('-'):
-             [role, tile.facing, tile.preFace].join('-');
-    },
-    2: (role, tile) => {
-      if (tile.rolling > 0) {
-        const hanged = tile.rolling === 3?'hanged ':'';
-        return hanged + [role, 'roll', tile.facing].join('-');
-      }
-      return '';
-    },
-    3: (role, tile) => {
-      if (tile.rolling > 0) {
-        const hanged = tile.rolling === 3?'hanged ':'';
-        return hanged + [role, 'roll', tile.facing].join('-');
-      }
-      if (tile.vanishing > 0) {
-        return 'vanish';
-      }
-      return '';
-    },
-    8: (role, tile) => {
-      if (tile.vanishing > 0) {
-        return 'vanish';
-      }
-      return '';
-    },
-    10: (role, tile) => {
-      return tile.active > 0 ? `active`:'';
-    },
-    12: (role, tile) => {
-      if (tile.pushing > 0) {
-        return [role, 'push', tile.facing].join('-');
-      } else if (tile.moving > 0) {
-        return [role, 'go', tile.facing].join('-');
-      } else if (tile.snapping > 0) {
-        return [role, 'snap', tile.facing].join('-');
-      }
-      return '';
-    },
-    13: portAnimation('port-all')
-  };
-
   const animation = animations[tile.role];
 
   if (!animation) return '';
@@ -80,20 +35,65 @@ function tileAnimation(role, tile){
   return animation(role, tile);
 }
 
+const animations = {
+  SNIKSNAK: (role, tile) => {
+    return tile.moving > 0 ?
+      [role, 'go', tile.facing].join('-'):
+      [role, tile.facing, tile.preFace].join('-');
+  },
+  ZONK: (role, tile) => {
+    if (tile.rolling > 0) {
+      const hanged = tile.rolling === 3?'hanged ':'';
+      return hanged + [role, 'roll', tile.facing].join('-');
+    }
+    return '';
+  },
+  INFOTRON: (role, tile) => {
+    if (tile.rolling > 0) {
+      const hanged = tile.rolling === 3?'hanged ':'';
+      return hanged + [role, 'roll', tile.facing].join('-');
+    }
+    if (tile.vanishing > 0) {
+      return 'vanish';
+    }
+    return '';
+  },
+  BASE: (role, tile) => {
+    if (tile.vanishing > 0) {
+      return 'vanish';
+    }
+    return '';
+  },
+  BUG: (role, tile) => {
+    return tile.active > 0 ? `active`:'';
+  },
+  MURPHY: (role, tile) => {
+    if (tile.pushing > 0) {
+      return [role, 'push', tile.facing].join('-');
+    } else if (tile.moving > 0) {
+      return [role, 'go', tile.facing].join('-');
+    } else if (tile.snapping > 0) {
+      return [role, 'snap', tile.facing].join('-');
+    }
+    return '';
+  },
+  PORT_ALL: portAnimation('port-all')
+};
+
 const roles = {
-  0: 'empty',
-  1: 'scissors',
-  2: 'zonks',
-  3: 'infotron',
-  4: 'explosion',
-  5: 'reddisk',
-  6: 'redterminal',
-  7: 'greenterminal',
-  8: 'base',
-  9: 'electron',
-  10: 'base',
-  12: 'morphy',
-  13: 'port'
+  EMPTY: 'empty',
+  SNIKSNAK: 'scissors',
+  ZONK: 'zonks',
+  INFOTRON: 'infotron',
+  EXPLOSION: 'explosion',
+  FLOPPY_RED: 'reddisk',
+  TERMINAL_RED: 'redterminal',
+  TERMINAL_GREEN: 'greenterminal',
+  BASE: 'base',
+  ELECTRON: 'electron',
+  BUG: 'base',
+  MURPHY: 'morphy',
+  PORT_ALL: 'port'
 };
 
 function tileClass(tile) {
@@ -107,7 +107,7 @@ function tileClass(tile) {
 
 function tileChildren(ctrl, tile) {
   let attrs;
-  if (tile.role === 13 && tile.porting > 0) {
+  if (tile.role === 'PORT_ALL' && tile.porting > 0) {
 
     attrs = {
       style: {
@@ -124,7 +124,10 @@ function tileChildren(ctrl, tile) {
       }
     }
 
-    const portingMurphy = m('div', attrs);
+    const portingMurphy = { tag: 'div',
+                            attrs: attrs,
+                            children: []
+                          };
 
     return portingMurphy;
   }
@@ -132,7 +135,7 @@ function tileChildren(ctrl, tile) {
 }
 
 function tileSiblings(ctrl, tile, pos, tileElement) {
-  if (tile.role === 12 && tile.eatingRole > 0) {
+  if (tile.role === 'MURPHY' && tile.eatingRole !== '') {
     const attrs = {
       style: {
         left: pos[0] * 32,
@@ -141,16 +144,22 @@ function tileSiblings(ctrl, tile, pos, tileElement) {
       class: `tile ${roles[tile.eatingRole]}`
     };
 
-    const eatenTile = m('div', attrs);
+    const eatenTile = { tag: 'div',
+                        attrs: attrs,
+                        children: []
+                      };
 
-    return m('div', {}, [eatenTile, tileElement]);
+    return { tag: 'div',
+             attrs: {},
+             children: [eatenTile, tileElement]
+           };
   }
 
   return tileElement;
 }
 
 function renderTile(ctrl, tile, pos, key) {
-  if (!tile || tile.role === 0) {
+  if (!tile || tile.role === 'EMPTY') {
     return null;
   }
 
@@ -173,7 +182,10 @@ function renderTile(ctrl, tile, pos, key) {
 
   const children = tileChildren(ctrl, tile);
 
-  const tileElement =  m('div', attrs, children);
+  const tileElement =  { tag: 'div',
+                         attrs: attrs,
+                         children: children
+                       };
 
   const siblings = tileSiblings(ctrl, tile, pos, tileElement);
 
@@ -184,20 +196,22 @@ function byKey(tile1, tile2) {
   return tile1.attrs.key - tile2.attrs.key;
 }
 
+const allPos = (function(width, height) {
+  const ps = [];
+  for (var y = 0; y<height; y++) {
+    for (var x = 0; x<width; x++) {
+      ps.push([x, y]);
+    }
+  }
+  return ps;
+})(26, 16);
+
+
 function renderContent(ctrl) {
-  const ports = [];
+  const bases = [];
+  const zonks = [];
   const electrons = [];
   const eatables = [];
-
-  const allPos = (function(width, height) {
-    const ps = [];
-    for (var y = 0; y<height; y++) {
-      for (var x = 0; x<width; x++) {
-        ps.push([x, y]);
-      }
-    }
-    return ps;
-  })(ctrl.data.viewWidth, ctrl.data.viewHeight);
 
   const positions = allPos;
 
@@ -210,12 +224,15 @@ function renderContent(ctrl) {
 
     const newTile = renderTile(ctrl, tile, pos, key);
 
-    if (tile.role === 12) {
+    if (tile.role === 'MURPHY') {
       eatables.push(newTile);
-    } else if (tile.role === 9 || tile.role === 1) {
+    } else if (tile.role === 'ELECTRON' || tile.role === 'SNIKSNAK') {
       electrons.push(newTile);
-    } else if (newTile)
-      ports.push(newTile);
+    } else if (tile.role ==='BASE') {
+      bases.push(newTile);
+    } else if (newTile) {
+      zonks.push(newTile);
+    }
   }
 
   const attrs = { style: {} };
@@ -224,10 +241,27 @@ function renderContent(ctrl) {
     attrs.style[transformProp()] = translate(ctrl.data.viewTween[1]);
   }
 
-  return m('div', attrs,
-           m('div', {class: 'eatables'}, eatables.sort(byKey)),
-           m('div', {class: 'electrons'}, electrons.sort(byKey)),
-           m('div', {class: 'ports'}, ports.sort(byKey)));
+  return {
+    tag: 'div',
+    attrs: attrs,
+    children: [
+      { tag: 'div',
+        attrs: {class: 'eatables'},
+        children: eatables.sort(byKey)
+      },
+      { tag: 'div',
+        attrs: {class: 'electrons'},
+        children: electrons.sort(byKey)
+      },
+      { tag: 'div',
+        attrs: {class: 'bases'},
+        children: bases.sort(byKey)
+      },
+      { tag: 'div',
+        attrs: {class: 'zonks'},
+        children: zonks.sort(byKey)
+      }
+    ]};
 }
 
 function renderViewport(ctrl) {
@@ -252,7 +286,11 @@ function renderViewport(ctrl) {
     attrs.style[transformProp()] = translate(ctrl.data.edgeTween[1]);
   }
 
-  return m('div', attrs, renderContent(ctrl));
+  return {
+    tag: 'div',
+    attrs: attrs,
+    children: [renderContent(ctrl)]
+  };
 }
 
 function renderViewportWrap(ctrl) {
@@ -266,18 +304,25 @@ function renderViewportWrap(ctrl) {
     class: 'sp-wrap',
     style: {
       height: viewHeight,
-      width: viewWidth,
+      width: viewWidth
     }
- 
+
   };
 
-  return m('div', attrs, children);
+  return {
+    tag: 'div',
+    attrs: attrs,
+    children: children
+  };
 }
 
 function render(ctrl) {
   const children = [renderViewportWrap(ctrl)];
 
-  return m('div', children);
+  return {
+    tag: 'div',
+    children: children
+  };
 }
 
 export default render;

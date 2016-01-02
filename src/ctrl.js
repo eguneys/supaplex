@@ -1,8 +1,8 @@
 import data from './data';
-import * as levels from './levels';
+import * as roles from './roles';
 
-export default function(cfg) {
-  this.data = data(cfg);
+export default function(levels) {
+  this.data = data(levels);
 
   this.move = (dir) => {
     const data = this.data;
@@ -21,18 +21,12 @@ export default function(cfg) {
     data.frame++;
 
     tiles.map((tile, pos) => {
-      levels.clearTrail(data, pos);
+      roles.clearTrail(data, pos);
     });
-
-    // for(var pos = tiles.length - 1; pos >= 0; pos--) {
-    //   const tile = tiles[pos];
-    //   if (data.frame === tile.frame) continue;
-    //   levels.actRole(data, pos);
-    // }
 
     tiles.map((tile, pos) => {
       if (data.frame === tile.frame) return;
-      levels.actRole(data, pos);
+      roles.actRole(data, pos);
     });
   };
 

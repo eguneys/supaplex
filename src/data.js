@@ -1,10 +1,11 @@
 import * as levels from './levels';
 
-export default function(cfg) {
+export default function(levelData) {
   var defaults = {
-    updateDuration: 114,
+    updateDuration: 100,
+    lastUpdateTime: 0,
     frame: 0,
-    tiles: levels.read(levels.initial),
+    tiles: levels.read(levelData.levels[0].data),
     viewOffset: [0, 0],
     edgeOffset: [0, 0],
     mapWidth: 60,

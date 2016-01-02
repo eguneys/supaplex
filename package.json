@@ -24,6 +24,8 @@
     "babel-plugin-add-module-exports": "^0.1.1",
     "babel-preset-es2015": "^6.3.13",
     "babelify": "^7.2.0",
+    "binary": "^0.3.0",
+    "binary-parser": "^1.1.5",
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
     "gulp-jshint": "^2.0.0",
