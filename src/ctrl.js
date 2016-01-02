@@ -1,8 +1,9 @@
 import data from './data';
 import * as roles from './roles';
+import * as levels from './levels';
 
-export default function(levels) {
-  this.data = data(levels);
+export default function(levelData) {
+  this.data = data();
 
   this.move = (dir) => {
     const data = this.data;
@@ -13,6 +14,19 @@ export default function(levels) {
     const data = this.data;
     data.inputs[dir] = false;
   };
+
+  this.init = () => {
+    const data = this.data;
+    data.tiles = levels.read(levelData.levels[0].data),
+
+    data.tiles.map((tile, pos) => {
+      if (tile.role === 'MURPHY') {
+        roles.viewportCenter(data, roles.key2pos(pos));
+      }
+    });
+  };
+
+  this.init();
 
   this.update = () => {
     const data = this.data;
