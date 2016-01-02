@@ -300,18 +300,20 @@ function viewportCenter(data, morphyPos) {
     return Math.max(Math.min(max, val), min);
   }
 
-  const halfViewWidth = viewWidth / 2 - 1;
-  const halfViewHeight = viewHeight / 2 -1;
+  const halfViewWidth = Math.floor(viewWidth / 2) - 1;
+  const halfViewHeight = Math.floor(viewHeight / 2) - 1;
 
-  const leftEdge = halfViewWidth;
-  const rightEdge = mapWidth - halfViewWidth;
-  const topEdge = halfViewHeight;
-  const bottomEdge = mapHeight - halfViewHeight;
+  const edgeValue = 2;
 
-  const edgeOffset = [inBetween(0, 2, morphyPos[0] - leftEdge) +
-                      inBetween(0, 1, morphyPos[0] - rightEdge),
-                      inBetween(0, 2, morphyPos[1] - topEdge) +
-                      inBetween(0, 1, morphyPos[1] - bottomEdge)];
+  const leftEdge = halfViewWidth - 1;
+  const rightEdge = mapWidth - (halfViewWidth + 2);
+  const topEdge = halfViewHeight - 1;
+  const bottomEdge = mapHeight - (halfViewHeight + 2);
+
+  const edgeOffset = [inBetween(0, edgeValue, morphyPos[0] - leftEdge) +
+                      inBetween(0, edgeValue, morphyPos[0] - rightEdge),
+                      inBetween(0, edgeValue, morphyPos[1] - topEdge) +
+                      inBetween(0, edgeValue, morphyPos[1] - bottomEdge)];
 
   const edgeDiff = [(edgeOffset[0] - data.edgeOffset[0]) * tileSize,
                     (edgeOffset[1] - data.edgeOffset[1]) * tileSize];
@@ -322,9 +324,9 @@ function viewportCenter(data, morphyPos) {
   data.edgeTween.start = data.lastUpdateTime;
 
   const viewOffset = [inBetween(0, mapWidth - viewWidth,
-                                morphyPos[0] - halfViewWidth - 2),
+                                morphyPos[0] - halfViewWidth - 1),
                       inBetween(0, mapHeight - viewHeight,
-                                morphyPos[1] - halfViewHeight - 2)];
+                                morphyPos[1] - halfViewHeight - 1)];
 
   const viewDiff = [(viewOffset[0] - data.viewOffset[0]) * tileSize,
                     (viewOffset[1] - data.viewOffset[1]) * tileSize];

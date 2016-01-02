@@ -1,8 +1,14 @@
+.supaplex {
+    display: flex;
+    justify-content: center;
+}
+
 .sp-wrap {
     border: gray solid;
 }
 
 .sp-viewport {
+    z-index: -1;
     background-size: cover;
     position: relative;
     background: black;

@@ -1,5 +1,10 @@
 import * as levels from './levels';
 
+export const Constants = {
+  viewHeight: 5 * 2 + 3,
+  viewWidth: 10 * 2 + 3
+};
+
 export default function(cfg) {
   var defaults = {
     updateDuration: 100,
@@ -9,8 +14,8 @@ export default function(cfg) {
     edgeOffset: [0, 0],
     mapWidth: 60,
     mapHeight: 24,
-    viewWidth: 26,
-    viewHeight: 16,
+    viewWidth: Constants.viewWidth,
+    viewHeight: Constants.viewHeight,
     tileSize: 32,
     tweens: {},
     inputs: {}

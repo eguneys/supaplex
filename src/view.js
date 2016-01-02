@@ -1,4 +1,5 @@
 import m from 'mithril';
+import { Constants } from './data';
 
 function transformProp() {
   return 'transform';
@@ -204,7 +205,7 @@ const allPos = (function(width, height) {
     }
   }
   return ps;
-})(26, 16);
+})(Constants.viewWidth, Constants.viewHeight);
 
 
 function renderContent(ctrl) {
@@ -295,8 +296,8 @@ function renderViewport(ctrl) {
 
 function renderViewportWrap(ctrl) {
   const tileSize = ctrl.data.tileSize;
-  const viewHeight = (ctrl.data.viewHeight - 2) * tileSize;
-  const viewWidth = (ctrl.data.viewWidth - 2) * tileSize;
+  const viewHeight = (ctrl.data.viewHeight - 3) * tileSize;
+  const viewWidth = (ctrl.data.viewWidth - 3) * tileSize;
 
   const children = [renderViewport(ctrl)];
 
