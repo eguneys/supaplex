@@ -17,7 +17,7 @@ export default function(levelData) {
 
   this.init = () => {
     const data = this.data;
-    data.tiles = levels.read(levelData.levels[3].data),
+    data.tiles = levels.read(levelData.levels[0].data),
 
     data.tiles.map((tile, pos) => {
       if (tile.role === 'MURPHY') {

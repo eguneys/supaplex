@@ -23,13 +23,7 @@ const levelsParser = new Parser()
           readUntil: 'eof'
         });
 
-fs.readFile('./assets/data/levels.dat', function(err, data) {
+module.exports = function parse(data) {
   var result = levelsParser.parse(data);
-
-  result = JSON.stringify(result);
-  fs.writeFile('./build/levels.json', result, function(err) {
-    if (err) {
-      throw err;
-    }
-  });
-});
+  return result;
+};

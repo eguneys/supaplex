@@ -1,5 +1,6 @@
 var source = require('vinyl-source-stream');
 var gulp = require('gulp');
+var tap = require('gulp-tap');
 var gutil = require('gulp-util');
 var jshint = require('gulp-jshint');
 var watchify = require('watchify');
@@ -31,7 +32,18 @@ gulp.task('prod', function() {
     .pipe(gulp.dest(destination));
 });
 
-gulp.task('dev', function() {
+gulp.task('levels', function() {
+  var buildLevels = require('./build-levels');
+  return gulp.src('./assets/data/levels.dat')
+    .pipe(tap(function(file) {
+      var contents = buildLevels(file.contents);
+      file.contents = new Buffer(JSON.stringify(contents));
+      file.path = gutil.replaceExtension(file.path, '.json');
+    }))
+    .pipe(gulp.dest(destination));
+});
+
+gulp.task('dev', ['levels'], function() {
   var opts = watchify.args;
   opts.debug = true;
   opts.standalone = standalone;
