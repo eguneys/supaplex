@@ -1,5 +1,6 @@
 import * as levels from './levels';
 import * as rolls from './rolls';
+import * as Constants from './data';
 
 function actRole(data, pos) {
   const tile = data.tiles[pos];
@@ -194,7 +195,7 @@ function morphyMoveBase(data, pos, facing, nextPos) {
 
   const morphyPos = key2pos(nextPos);
 
-  viewportCenter(data, morphyPos);
+  viewportCenter(data, morphyPos, key2pos(pos));
 }
 
 function morphyMove(data, pos, dir, nextPos) {
@@ -289,44 +290,94 @@ function morphySnap2(data, pos) {
   tile.nextDecision = decisionInput;
 }
 
-function viewportCenter(data, morphyPos) {
+
+function inBetween(min, max, val) {
+  return Math.max(Math.min(max, val), min);
+}
+
+function applyBounds(data, edgeOffset) {
   const tileSize = data.tileSize;
-  const mapWidth = data.mapWidth;
-  const mapHeight = data.mapHeight;
-  const viewWidth = data.viewWidth;
+  const renderHeight = Constants.RENDER_HEIGHT * tileSize;
+  const renderWidth = Constants.RENDER_WIDTH * tileSize;
   const viewHeight = data.viewHeight;
+  const viewWidth = data.viewWidth;
 
-  function inBetween(min, max, val) {
-    return Math.max(Math.min(max, val), min);
-  }
+  const topEdgeOffset = data.topEdgeOffset;
+  const borderHeight = (tileSize / 2);
+  const borderWidth = (tileSize / 2);
 
-  const halfViewWidth = Math.floor(viewWidth / 2) - 1;
-  const halfViewHeight = Math.floor(viewHeight / 2) - 1;
 
-  const edgeValue = 2;
+  const hudHeight = data.showHUD?(tileSize * 3 / 2):0;
 
-  const leftEdge = halfViewWidth - 1;
-  const rightEdge = mapWidth - (halfViewWidth + 2);
-  const topEdge = halfViewHeight - 1;
-  const bottomEdge = mapHeight - (halfViewHeight + 2);
+  const defaultEdgeTop = borderHeight + tileSize +
+          (tileSize * topEdgeOffset);
 
-  const edgeOffset = [inBetween(0, edgeValue, morphyPos[0] - leftEdge) +
-                      inBetween(0, edgeValue, morphyPos[0] - rightEdge),
-                      inBetween(0, edgeValue, morphyPos[1] - topEdge) +
-                      inBetween(0, edgeValue, morphyPos[1] - bottomEdge)];
+  const defaultEdgeLeft = 2 * tileSize;
 
-  const edgeDiff = [(edgeOffset[0] - data.edgeOffset[0]) * tileSize,
-                    (edgeOffset[1] - data.edgeOffset[1]) * tileSize];
+  let edgeLeft = -defaultEdgeLeft + (-1 * edgeOffset[0]) * tileSize;
+  let edgeTop = -defaultEdgeTop + (-1 * edgeOffset[1]) * tileSize;
+
+  edgeLeft = inBetween(viewWidth - (renderWidth + borderWidth * 2),
+                       0, edgeLeft);
+  edgeTop = inBetween(viewHeight - hudHeight -
+                      (renderHeight + borderHeight * 2),
+                      0, edgeTop);
+
+  return [edgeLeft, edgeTop];
+}
+
+function viewportCenter(data, morphyPos, prePos) {
+  const tileSize = data.tileSize;
+  const mapHeight = data.mapHeight;
+  const mapWidth = data.mapWidth;
+  const renderHeight = Constants.RENDER_HEIGHT;
+  const renderWidth = Constants.RENDER_WIDTH;
+
+  const halfRenderWidth = Math.floor(renderWidth / 2);
+  const halfRenderHeight = Math.floor(renderHeight / 2);
+
+  const leftEdge = morphyPos[0] - halfRenderWidth;
+  const rightEdge = morphyPos[0] - (mapWidth - halfRenderWidth);
+  const topEdge = morphyPos[1] - halfRenderHeight;
+  const bottomEdge = morphyPos[1] - (mapHeight - halfRenderHeight);
+
+  const edgeValue = 3;
+
+  let edgeOffset = [inBetween(-edgeValue, 0, leftEdge) +
+                    inBetween(0, edgeValue, rightEdge + 1),
+                    inBetween(-edgeValue, 0, topEdge) +
+                    inBetween(0, edgeValue, bottomEdge + 1)];
+
+  edgeOffset = applyBounds(data, edgeOffset);
+
+  const edgeDiff = [(data.edgeOffset[0] - edgeOffset[0]),
+                    (data.edgeOffset[1] - edgeOffset[1])];
 
   data.edgeOffset = edgeOffset;
 
-  data.edgeTween = [edgeDiff, edgeDiff];
-  data.edgeTween.start = data.lastUpdateTime;
+  if (prePos) {
+    data.edgeTween = [edgeDiff, edgeDiff];
+    data.edgeTween.start = data.lastUpdateTime;
 
-  const viewOffset = [inBetween(0, mapWidth - viewWidth,
-                                morphyPos[0] - halfViewWidth - 1),
-                      inBetween(0, mapHeight - viewHeight,
-                                morphyPos[1] - halfViewHeight - 1)];
+    const tweenDuration = (Math.abs(edgeDiff[1]) / (tileSize / 2));
+
+    if (tweenDuration > 0 && tweenDuration < 2) {
+      const duration = tweenDuration * data.updateDuration;
+      data.edgeTween.duration = duration;
+
+      // bad
+      if ((prePos[1] === 18 && morphyPos[1] === 17) ||
+          (prePos[1] === 19 && morphyPos[1] === 18) ||
+          (prePos[1] === 4 && morphyPos[1] === 5) ||
+          (prePos[1] === 5 && morphyPos[1] === 6)) {
+        console.log('here');
+        data.edgeTween.start += (2 * data.updateDuration) - duration;
+      }
+    }
+  }
+
+  const viewOffset = [inBetween(0, mapWidth - renderWidth, leftEdge),
+                      inBetween(0, mapHeight - renderHeight, topEdge)];
 
   const viewDiff = [(viewOffset[0] - data.viewOffset[0]) * tileSize,
                     (viewOffset[1] - data.viewOffset[1]) * tileSize];

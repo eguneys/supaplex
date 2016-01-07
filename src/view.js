@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { Constants } from './data';
+import * as Constants from './data';
 
 function transformProp() {
   return 'transform';
@@ -205,7 +205,7 @@ const allPos = (function(width, height) {
     }
   }
   return ps;
-})(Constants.viewWidth, Constants.viewHeight);
+})(Constants.RENDER_WIDTH, Constants.RENDER_HEIGHT);
 
 
 function renderContent(ctrl) {
@@ -265,21 +265,20 @@ function renderContent(ctrl) {
     ]};
 }
 
-function renderViewport(ctrl) {
+function renderViewport(ctrl, viewHeight) {
   const tileSize = ctrl.data.tileSize;
-  const viewHeight = ctrl.data.viewHeight * tileSize;
-  const viewWidth = ctrl.data.viewWidth * tileSize;
+  const renderHeight = Constants.RENDER_HEIGHT * tileSize;
+  const renderWidth = Constants.RENDER_WIDTH * tileSize;
 
-  const edgeLeft = -1 * ctrl.data.edgeOffset[0] * tileSize;
-  const edgeTop = -1 * ctrl.data.edgeOffset[1] * tileSize;
+  const edgeOffset = ctrl.data.edgeOffset;
 
   const attrs = {
     class: 'sp-viewport',
     style: {
-      height: viewHeight,
-      width: viewWidth,
-      left: edgeLeft,
-      top:edgeTop
+      height: renderHeight,
+      width: renderWidth,
+      left: edgeOffset[0],
+      top:edgeOffset[1]
     }
   };
 
@@ -296,10 +295,10 @@ function renderViewport(ctrl) {
 
 function renderViewportWrap(ctrl) {
   const tileSize = ctrl.data.tileSize;
-  const viewHeight = (ctrl.data.viewHeight - 3) * tileSize;
-  const viewWidth = (ctrl.data.viewWidth - 3) * tileSize;
+  const viewHeight = ctrl.data.viewHeight;
+  const viewWidth = ctrl.data.viewWidth;
 
-  const children = [renderViewport(ctrl)];
+  const children = [renderViewport(ctrl, viewHeight)];
 
   const attrs = {
     class: 'sp-wrap',

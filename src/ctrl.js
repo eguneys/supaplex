@@ -15,10 +15,30 @@ export default function(levelData) {
     data.inputs[dir] = false;
   };
 
+  this.toggleHUD = () => {
+    const data = this.data;
+
+    data.showHUD = !data.showHUD;
+
+    if (data.showHUD) {
+      data.topEdgeOffset = 1;
+    } else {
+      data.topEdgeOffset = (1 / 3);
+    }
+
+    this.centerScroll();
+
+  };
+
   this.init = () => {
     const data = this.data;
-    data.tiles = levels.read(levelData.levels[0].data),
+    data.tiles = levels.read(levelData.levels[1].data);
 
+    this.centerScroll();
+  };
+
+  this.centerScroll = () => {
+    const data = this.data;
     data.tiles.map((tile, pos) => {
       if (tile.role === 'MURPHY') {
         roles.viewportCenter(data, roles.key2pos(pos));
@@ -53,7 +73,8 @@ export default function(levelData) {
     Object.keys(data.tweens).map((key) => {
       const tween = data.tweens[key];
       const nowOrPause = tween.pause?tween.pause:now;
-      const rest = 1 - (nowOrPause - tween.start) / (data.updateDuration * 2);
+      const duration = tween.duration?tween.duration:data.updateDuration * 2;
+      const rest = 1 - (nowOrPause - tween.start) / duration;
       tween[1] = [Math.round(tween[0][0] * rest),
                   Math.round(tween[0][1] * rest)];
 
@@ -63,11 +84,11 @@ export default function(levelData) {
     });
 
     if (data.viewTween) {
-      updateTween(data.viewTween, now, data.updateDuration);
+      updateTween(data.viewTween, now, data.updateDuration * 2);
     }
 
     if (data.edgeTween) {
-      updateTween(data.edgeTween, now, data.updateDuration);
+      updateTween(data.edgeTween, now, data.updateDuration * 2);
     }
 
     data.tweens = newTweens;
@@ -75,7 +96,12 @@ export default function(levelData) {
 }
 
 function updateTween(tween, now, duration) {
-  let rest = 1 - (now - tween.start) / (duration * 2);
+  duration = (tween.duration)?tween.duration:duration;
+  let rest = 1 - (now - tween.start) / duration;
+
+  if (rest > 1) {
+    rest = 1;
+  }
 
   if (rest < 0) {
     rest = 0;

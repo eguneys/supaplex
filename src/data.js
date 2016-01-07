@@ -1,8 +1,19 @@
 import * as levels from './levels';
 
-export const Constants = {
-  viewHeight: 5 * 2 + 3,
-  viewWidth: 10 * 2 + 3
+const TILE_SIZE = 32;
+
+const VIEW_HEIGHT = 6 * 2;
+const VIEW_WIDTH = 10 * 2;
+
+const RENDER_HEIGHT = VIEW_HEIGHT + 3;
+const RENDER_WIDTH = VIEW_WIDTH + 3;
+
+export {
+  TILE_SIZE,
+  VIEW_HEIGHT,
+  VIEW_WIDTH,
+  RENDER_HEIGHT,
+  RENDER_WIDTH
 };
 
 export default function(cfg) {
@@ -12,11 +23,13 @@ export default function(cfg) {
     frame: 0,
     viewOffset: [0, 0],
     edgeOffset: [0, 0],
-    mapWidth: 60,
+    topEdgeOffset: 1, // 1 or (1 / 3),
+    showHUD: true,
     mapHeight: 24,
-    viewWidth: Constants.viewWidth,
-    viewHeight: Constants.viewHeight,
-    tileSize: 32,
+    mapWidth: 60,
+    viewHeight: VIEW_HEIGHT * TILE_SIZE + (TILE_SIZE / 2),
+    viewWidth: VIEW_WIDTH * TILE_SIZE,
+    tileSize: TILE_SIZE,
     tweens: {},
     inputs: {}
   };

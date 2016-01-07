@@ -2,6 +2,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="../assets/main.css">
+    <style>
+     .supaplex {
+         position: absolute;
+         top: 10%;
+         left: 10%;
+     }
+    </style>
   </head>
   <body>
     <script src="../build/supaplex.js"></script>
@@ -14,6 +21,20 @@
        supaplex = Supaplex(document.getElementById('supaplex'), {
        });
      })();
+
+     function resize() {
+       const supa = document.getElementById('supaplex');
+       const rect = supa.getBoundingClientRect();
+
+       const el = document.getElementsByClassName('sp-wrap')[0];
+       var scaleX = rect.width / 640 ;
+       var scaleY = rect.height / 320 ;
+       var scaleToFit = Math.min(scaleX, scaleY);
+       scaleToFit = Math.round(scaleToFit * 100) / 100;
+       el.style.transformOrigin = "0 0";
+       el.style.transform = "scale("+scaleToFit+")";
+     }
+     //window['onresize'] = resize;
     </script>
   </body>
 </html>

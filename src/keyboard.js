@@ -24,4 +24,8 @@ export default function init(ctrl) {
       ctrl.clearMove(dir);
     }), 'keyup');
   });
+
+  k.bind('enter', preventing(() => {
+    ctrl.toggleHUD();
+  }), 'keydown');
 };
