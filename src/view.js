@@ -296,12 +296,36 @@ function renderViewport(ctrl, viewHeight) {
   };
 }
 
+function renderHUD(ctrl) {
+  if (!ctrl.data.showHUD) {
+    return '';
+  }
+
+  const tileSize = ctrl.data.tileSize;
+  const width = ctrl.data.viewWidth;
+  const height = tileSize * 3 / 2;
+
+  const attrs = {
+    class: 'sp-hud',
+    style: {
+      backgroundSize: `${width}px ${height}px`,
+      height: height,
+      width: width
+    }
+  };
+  return {
+    tag: 'div',
+    attrs: attrs
+  };
+}
+
 function renderViewportWrap(ctrl) {
   const tileSize = ctrl.data.tileSize;
   const viewHeight = ctrl.data.viewHeight;
   const viewWidth = ctrl.data.viewWidth;
 
-  const children = [renderViewport(ctrl, viewHeight)];
+  const children = [renderViewport(ctrl, viewHeight),
+                    renderHUD(ctrl)];
 
   const attrs = {
     class: 'sp-wrap',

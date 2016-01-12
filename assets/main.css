@@ -1,9 +1,18 @@
 .sp-wrap {
-    border: gray solid;
+    overflow: hidden;
+    position:relative;
+    border: black solid;
+    background: black;
+}
+
+.sp-hud {
+    position:absolute;
+    border-top: 1px black solid;
+    bottom:0px;
+    background-image: url('images/hud.png');
 }
 
 .sp-viewport {
-    z-index: -1;
     background-size: cover;
     position: relative;
     background: black;
