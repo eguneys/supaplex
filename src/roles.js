@@ -1,6 +1,7 @@
-import * as levels from './levels';
 import * as rolls from './rolls';
 import * as Constants from './data';
+
+const { MAP_HEIGHT, MAP_WIDTH } = Constants;
 
 function actRole(data, pos) {
   const tile = data.tiles[pos];
@@ -55,7 +56,8 @@ function vanishClear(data, pos) {
   // const tile = data.tiles[pos];
   // tile.vanishing = 0;
   // delete tile.nextDecision;
-  data.tiles[pos] = levels.makeRole(0);
+  //data.tiles[pos] = levels.makeRole(0);
+  data.tiles[pos] = { role: 'EMPTY' };
 }
 
 /*
@@ -237,7 +239,8 @@ function morphyEatMove(data, pos, dir) {
   const eatPos = posNeighbor(pos, dir);
   const eatRole = data.tiles[eatPos].role;
 
-  data.tiles[eatPos] = levels.makeRole(0);
+  //data.tiles[eatPos] = levels.makeRole(0);
+  data.tiles[eatPos] = { role: 'EMPTY' };
 
   morphyMoveBase(data, pos, dir);
 
@@ -370,7 +373,6 @@ function viewportCenter(data, morphyPos, prePos) {
           (prePos[1] === 19 && morphyPos[1] === 18) ||
           (prePos[1] === 4 && morphyPos[1] === 5) ||
           (prePos[1] === 5 && morphyPos[1] === 6)) {
-        console.log('here');
         data.edgeTween.start += (2 * data.updateDuration) - duration;
       }
     }
@@ -707,11 +709,11 @@ function moveChar(data, pos, dirS, nextPos) {
 }
 
 function pos2key(pos) {
-  return pos[1] * 60 + pos[0];
+  return pos[1] * MAP_WIDTH + pos[0];
 }
 
 function key2pos(key) {
-  return [key % 60, Math.floor(key / 60)];
+  return [key % MAP_WIDTH, Math.floor(key / MAP_WIDTH)];
 }
 
 const Move = {
@@ -723,7 +725,7 @@ const Move = {
   down: {
     i: 1,
     a: [0, -32],
-    v: +60
+    v: +MAP_WIDTH
   },
   right: {
     i: 2,
@@ -733,7 +735,7 @@ const Move = {
   up: {
     i: 3,
     a: [0, +32],
-    v: -60
+    v: -MAP_WIDTH
   }
 };
 

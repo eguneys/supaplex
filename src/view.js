@@ -1,5 +1,6 @@
 import m from 'mithril';
 import * as Constants from './data';
+import * as util from './roles';
 
 function transformProp() {
   return 'transform';
@@ -220,7 +221,9 @@ function renderContent(ctrl) {
 
   for (var i = 0; i < positions.length; i++) {
     const pos = positions[i];
-    const key = (viewOffset[1] + pos[1]) * 60 + pos[0] + viewOffset[0];
+    //const key = (viewOffset[1] + pos[1]) * 60 + pos[0] + viewOffset[0];
+    const key = util.pos2key([pos[0]+viewOffset[0],
+                               pos[1] + viewOffset[1]]);
     const tile = ctrl.data.tiles[key];
 
     const newTile = renderTile(ctrl, tile, pos, key);

@@ -1,5 +1,8 @@
 import * as rolls from './rolls';
 import * as roles from './roles';
+import * as Constants from './data';
+
+const { MAP_HEIGHT, MAP_WIDTH } = Constants;
 
 const RoleCode = {
   0: 'EMPTY',
@@ -162,10 +165,21 @@ function enhance(arr) {
 }
 
 function read(tiles) {
-  tiles = tiles.map((tile) => {
-    return makeRole(tile);
-  });
-  return tiles;
+  const result = [];
+
+  for (var i = 0; i < MAP_HEIGHT; i++) {
+    for (var j = 0; j < MAP_WIDTH; j++) {
+      const dstKey = roles.pos2key([j, i]);
+      const srcKey = (i + 1) * 60 + (j + 1);
+      result[dstKey] = makeRole(tiles[srcKey]);
+    }
+  }
+
+  // tiles = tiles.map((tile) => {
+  //   return makeRole(tile);
+  // });
+
+  return result;
 }
 
 export {

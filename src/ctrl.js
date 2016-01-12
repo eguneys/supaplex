@@ -32,7 +32,7 @@ export default function(levelData) {
 
   this.init = () => {
     const data = this.data;
-    data.tiles = levels.read(levelData.levels[1].data);
+    data.tiles = levels.read(levelData.levels[0].data);
 
     this.centerScroll();
   };

@@ -1,6 +1,7 @@
-import * as levels from './levels';
-
 const TILE_SIZE = 32;
+
+const MAP_WIDTH = 60 - 2;
+const MAP_HEIGHT = 24 - 2;
 
 const VIEW_HEIGHT = 6 * 2;
 const VIEW_WIDTH = 10 * 2;
@@ -13,7 +14,9 @@ export {
   VIEW_HEIGHT,
   VIEW_WIDTH,
   RENDER_HEIGHT,
-  RENDER_WIDTH
+  RENDER_WIDTH,
+  MAP_WIDTH,
+  MAP_HEIGHT
 };
 
 export default function(cfg) {
@@ -25,8 +28,8 @@ export default function(cfg) {
     edgeOffset: [0, 0],
     topEdgeOffset: 1, // 1 or (1 / 3),
     showHUD: true,
-    mapHeight: 24,
-    mapWidth: 60,
+    mapHeight: MAP_HEIGHT,
+    mapWidth: MAP_WIDTH,
     viewHeight: VIEW_HEIGHT * TILE_SIZE + (TILE_SIZE / 2),
     viewWidth: VIEW_WIDTH * TILE_SIZE,
     tileSize: TILE_SIZE,
