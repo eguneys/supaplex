@@ -1,0 +1,385 @@
+$image-path: 'assets/images/';
+$image-hud: $image-path + 'hud.png';
+$image-border: $image-path + 'SupaplexBorder.png';
+$image-tile: $image-path + 'Supaplex32.png';
+
+@mixin tf($col, $row) {
+    $row: $row * 32 * -1;
+    $col: $col * 32 * -1;
+    background-position:  #{$col}px #{$row}px;
+}
+
+.sp-wrap {
+    overflow: hidden;
+    position:relative;
+    border: black solid;
+    background: black;
+}
+
+.sp-hud {
+    position:absolute;
+    border-top: 1px black solid;
+    bottom:0px;
+    background-image: url($image-hud);
+}
+
+.sp-viewport {
+    background-size: cover;
+    position: relative;
+    background: black;
+    border: 16px solid;
+    border-image: url($image-border) 16;
+}
+
+.tile {
+    background-image: url($image-tile);
+    position: absolute;
+    width: 32;
+    height: 32;
+}
+
+.empty {
+    @include tf(3, 19);
+}
+
+.port {
+}
+
+.port.port-all {
+    @include tf(3, 17);
+}
+
+.zonks {
+    @include tf(0, 5);
+}
+
+.zonks-roll-left {
+    animation: zonks-roll 0.12s steps(5) reverse infinite;
+}
+
+.zonks-roll-right {
+    animation: zonks-roll 0.12s steps(5) infinite;
+}
+
+.zonks-roll-left.hanged, .zonks-roll-right.hanged {
+    animation-play-state: paused;
+}
+
+@keyframes zonks-roll {
+    from { @include tf(0, 5) }
+    to { @include tf(5, 5) }
+}
+
+.infotron {
+    @include tf(0, 6);
+}
+
+.infotron-roll-left {
+    animation: infotron-roll 0.24s steps(8) reverse infinite;
+}
+
+.infotron-roll-right {
+    animation: infotron-roll 0.24s steps(8) infinite;
+}
+
+.infotron-roll-left.hanged, .infotron-roll-right.hanged {
+    animation-play-state: paused;
+}
+
+.infotron.vanish {
+    animation: infotron-vanish .24s steps(8);
+}
+
+.infotron-explode {
+    animation: infotron-explode 1s steps(8) infinite;
+}
+
+@keyframes infotron-roll {
+    from { @include tf(0, 6); }
+    to { @include tf(8, 6); }
+}
+
+@keyframes infotron-vanish {
+    from { @include tf(0, 7); }
+    to { @include tf(8, 7); }
+}
+
+@keyframes infotron-explode {
+    from { @include tf(0, 8); }
+    to { @include tf(8, 8); }
+}
+
+.explosion {
+    animation: explosion 1s steps(8) infinite;
+}
+
+@keyframes explosion {
+    from { @include tf(0, 9); }
+    to {  @include tf(8, 9); }
+}
+
+.reddisk {
+    animation: reddisk-vanish 1s steps(8) infinite;
+}
+
+@keyframes reddisk-vanish {
+    from { @include tf(0, 10); }
+    to { @include tf(8, 10); }
+}
+
+.redterminal {
+    animation: redterminal-activate 1s steps(8) infinite;
+}
+
+@keyframes redterminal-activate {
+    from { @include tf(0, 11); }
+    to { @include tf(8, 11); }
+}
+
+.greenterminal {
+    animation: greenterminal-activate 1s steps(8) infinite;
+}
+
+@keyframes greenterminal-activate {
+    from { @include tf(0, 12); }
+    to { @include tf(8, 12); }
+}
+
+.base {
+    @include tf(0, 14);
+}
+
+.base.active {
+    animation: base-bug 1s steps(1) infinite;
+}
+
+.base.vanish {
+    animation: base-vanish .24s steps(8) infinite;
+}
+
+@keyframes base-vanish {
+    from { @include tf(0, 13); }
+    to { @include tf(8, 13); }
+}
+
+@keyframes base-bug {
+    0% {
+        @include tf(2, 14);
+    }
+    7.6% {
+        @include tf(2, 14);
+    }
+    15.2% {
+        @include tf(3, 14);
+    }
+    22.7% {
+        @include tf(4, 14);
+    }
+    30.4% {
+        @include tf(5, 14);
+    }
+    38% {
+        @include tf(4, 14);
+    }
+    45% {
+        @include tf(3, 14);
+    }
+    53% {
+        @include tf(4, 14);
+    }
+    60.8% {
+        @include tf(5, 14);
+    }
+    68.3% {
+        @include tf(4, 14);
+    }
+    76% {
+        @include tf(3, 14);
+    }
+    83.6% {
+        @include tf(1, 14);
+    }
+    91% {
+        @include tf(2, 14);
+    }
+    100% {
+        @include tf(0, 14);
+    }
+}
+
+.electron {
+    animation: electron .24s steps(8) infinite;
+}
+
+@keyframes electron {
+    from {     @include tf(0, 18); }
+    to { @include tf(8, 18); }
+}
+
+.scissors {
+}
+
+.scissors-go-up {
+    animation: scissors-up .12s steps(8) infinite;
+}
+
+.scissors-go-down {
+    animation: scissors-down .12s steps(8) infinite;
+}
+
+.scissors-go-left {
+    animation: scissors-left .12s steps(8) infinite;
+}
+
+.scissors-go-right {
+    animation: scissors-right .12s steps(8) infinite;
+}
+
+.scissors-up-up {
+    @include tf(1, 0);
+}
+
+.scissors-left-left {
+    @include tf(3, 0);
+}
+
+.scissors-down-down {
+    @include tf(5, 0);
+}
+
+.scissors-right-right {
+    @include tf(7, 0);
+}
+
+.scissors-right-up, .scissors-up-right {
+    @include tf(0, 0);
+}
+
+.scissors-down-right, .scissors-right-down {
+    @include tf(6, 0);
+}
+
+.scissors-left-down, .scissors-down-left {
+    @include tf(4, 0);
+}
+
+.scissors-up-left, .scissors-left-up {
+    @include tf(2, 0);
+}
+
+@keyframes scissors-up {
+    from { @include tf(0, 1); }
+    to { @include tf(8, 1); }
+}
+
+@keyframes scissors-down {
+    from { @include tf(0, 2); }
+    to { @include tf(8, 2); }
+}
+
+@keyframes scissors-left {
+    from { @include tf(0, 3); }
+    to { @include tf(8, 3); }
+}
+
+@keyframes scissors-right {
+    from { @include tf(0, 4); }
+    to { @include tf(8, 4); }
+}
+
+.morphy {
+    @include tf(0, 19)
+}
+
+.morphy-snap-right {
+    @include tf(0, 21)
+}
+
+.morphy-snap-left {
+    @include tf(1, 21);
+}
+
+.morphy-snap-up {
+    @include tf(2, 21)
+}
+
+.morphy-snap-down {
+    @include tf(3, 21)
+}
+
+.morphy-push-right {
+    @include tf(0, 22)
+}
+
+.morphy-push-left {
+    @include tf(1, 22)
+}
+
+.morphy-sick {
+    @include tf(2, 22)
+}
+
+.morphy-go-right {
+    animation: morphy-go-right .24s steps(7) infinite;
+}
+
+.morphy-go-left, .morphy-go-up, .morphy-go-down {
+    animation: morphy-go-left .24s steps(7) infinite;
+}
+
+.morphy-exit {
+    animation: morphy-exit .5s steps(7);
+}
+
+
+.morphy-yawn {
+    animation: morphy-yawn-1 2s steps(6),
+    morphy-yawn-2 2s 2s steps(4) forwards;
+}
+
+.morphy-sleep-right {
+    animation: morphy-yawn-1 1s steps(6),
+    morphy-yawn-2 1s 1s steps(4),
+    morphy-sleep-right 2s 2s steps(2) forwards;
+}
+
+.morphy-sleep-left {
+    animation: morphy-yawn-1 1s steps(6),
+    morphy-yawn-2 1s 1s steps(4),
+    morphy-sleep-left 2s 2s steps(2) forwards;
+}
+
+@keyframes morphy-go-right {
+    from { @include tf(0, 23); }
+    to { @include tf(7, 23); }
+}
+
+@keyframes morphy-go-left {
+    from { @include tf(0, 24); }
+    to { @include tf(7, 24); }
+}
+
+@keyframes morphy-exit {
+    from { @include tf(0, 25); }
+    to { @include tf(7, 25); }
+}
+
+@keyframes morphy-yawn-1 {
+    from { @include tf(1, 19); }
+    to { @include tf(7, 19); }
+}
+
+@keyframes morphy-yawn-2 {
+    from { @include tf(0, 20); }
+    to { @include tf(4, 20); }
+}
+
+@keyframes morphy-sleep-right {
+    from { @include tf(5, 20); }
+    to { @include tf(7, 20); }
+}
+
+@keyframes morphy-sleep-left {
+    from { @include tf(5, 21); }
+    to { @include tf(7, 21); }
+}

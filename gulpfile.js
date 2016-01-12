@@ -8,6 +8,10 @@ var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var streamify = require('gulp-streamify');
 
+var sass = require('gulp-ruby-sass');
+
+var assetFiles = './assets/**/*';
+var sassFiles = ['./sass/*.scss'];
 var sources = ['./src/main.js'];
 var destination = './build';
 var onError = function(error) {
@@ -34,7 +38,7 @@ gulp.task('prod', function() {
 
 gulp.task('levels', function() {
   var buildLevels = require('./build-levels');
-  return gulp.src('./assets/data/levels.dat')
+  return gulp.src('./data/levels.dat')
     .pipe(tap(function(file) {
       var contents = buildLevels(file.contents);
       file.contents = new Buffer(JSON.stringify(contents));
@@ -43,7 +47,19 @@ gulp.task('levels', function() {
     .pipe(gulp.dest(destination));
 });
 
-gulp.task('dev', ['levels'], function() {
+gulp.task('assets', function() {
+  var path = require('path');
+  gulp.src(assetFiles)
+    .pipe(gulp.dest(path.join(destination, 'assets')));
+});
+
+gulp.task('sass', function() {
+  return sass(sassFiles)
+    .on('error', sass.logError)
+    .pipe(gulp.dest(destination));
+});
+
+gulp.task('dev', ['assets', 'sass', 'levels'], function() {
   var opts = watchify.args;
   opts.debug = true;
   opts.standalone = standalone;
@@ -60,6 +76,8 @@ gulp.task('dev', ['levels'], function() {
       .pipe(source('supaplex.js'))
       .pipe(gulp.dest(destination));
   }
+
+  gulp.watch(sassFiles, ['sass']);
 
   return rebundle();
 });

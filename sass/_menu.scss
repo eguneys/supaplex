@@ -1,0 +1,75 @@
+$image-path: 'assets/images/';
+$image-menu: $image-path + 'Supaplex_Main2.png';
+
+@font-face {
+    font-family: 'supaplex';
+    src: url('assets/fonts/thin_pixel-7.ttf')
+}
+
+
+.sp-menu {
+    background-image: url($image-menu);
+    height: 100%;
+    width: 100%;
+}
+
+.sp-green {
+    color: #00b261;
+}
+
+.sp-red {
+    color: #e31010;
+}
+
+.sp-blue {
+    color: #7192e3;
+}
+
+.sp-yellow {
+    color: #e3e300;
+}
+
+.sp-text {
+    font-family: supaplex;
+    font-size: 300%;
+    line-height: 0;
+}
+
+.sp-message-line {
+    position: absolute;
+    top: 61.5%;
+    left: 52%;
+}
+
+.sp-level-list {
+    position: absolute;
+}
+
+.sp-level-button {
+    position: absolute;
+    height: 20px;
+    width: 326px;
+}
+
+.sp-level-button.up {
+    top: -12px;
+    left: -4px;
+}
+
+.sp-level-button.down {
+    top: 66px;
+    left: -4px;
+}
+
+.sp-button {
+    border-top: 2px solid #929292;
+    border-left: 2px solid #929292;
+    border-bottom: 2px solid #616161;
+    border-right: 2px solid #616161;
+}
+.sp-button:hover {
+    border-bottom: 2px solid #929292;
+    border-right: 3px solid #929292;
+    border-top: 2px solid #616161;
+    border-left: 2px solid #616161;
+}
