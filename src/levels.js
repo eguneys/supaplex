@@ -81,6 +81,7 @@ const Role = {
     nextDecision: roles.decisionBug
   },
   MURPHY: {
+    facingHorizontal: 'left',
     facing: 'left',
     moving: 0,
     nextDecision: roles.decisionInput

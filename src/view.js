@@ -75,7 +75,7 @@ const animations = {
     if (tile.pushing > 0) {
       return [role, 'push', tile.facing].join('-');
     } else if (tile.moving > 0) {
-      return [role, 'go', tile.facing].join('-');
+      return [role, 'go', tile.facingHorizontal].join('-');
     } else if (tile.snapping > 0) {
       return [role, 'snap', tile.facing].join('-');
     }

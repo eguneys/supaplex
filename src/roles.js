@@ -212,16 +212,16 @@ function morphyMove(data, pos, dir, nextPos) {
 
   morphyMoveBase(data, pos, dir, nextPos);
 
-  tile.facing = dir;
+  setMorphyFace(tile, dir);
   tile.pushing = 0;
   tile.moving = 1;
   tile.nextDecision = decisionMurphyMove2;
 }
 
- function morphyPush(data, pos, dir) {
+function morphyPush(data, pos, dir) {
   const tile = data.tiles[pos];
 
-  tile.facing = dir;
+  setMorphyFace(tile, dir);
   tile.pushing = 1;
   tile.nextDecision = decisionMurphyPush2;
 }
@@ -234,7 +234,7 @@ function morphyPushMove(data, pos, dir) {
   rolls.roll1(data, pushPos, dir);
   morphyMoveBase(data, pos, dir);
 
-  tile.facing = dir;
+  setMorphyFace(tile, dir);
   tile.pushing = 3;
   tile.moving = 1;
   tile.nextDecision = decisionMurphyPushMove2;
@@ -251,7 +251,7 @@ function morphyEatMove(data, pos, dir) {
 
   morphyMoveBase(data, pos, dir);
 
-  tile.facing = dir;
+  setMorphyFace(tile, dir);
   tile.pushing = 0;
   tile.moving = 1;
   tile.eatingRole = eatRole;
@@ -266,7 +266,8 @@ function morphySnap(data, pos, dir) {
 
   vanish1(data, snapPos);
 
-  tile.facing = dir;
+  setMorphyFace(tile, dir);
+
   tile.snapping = 1;
   tile.pushing = 0;
   tile.nextDecision = decisionMurphySnap2;
@@ -298,6 +299,13 @@ function morphySnap2(data, pos) {
   const tile = data.tiles[pos];
   tile.snapping = 2;
   tile.nextDecision = decisionInput;
+}
+
+function setMorphyFace(tile, facing) {
+  if (isHorizontal(facing)) {
+    tile.facingHorizontal = facing;
+  }
+  tile.facing = facing;
 }
 
 
