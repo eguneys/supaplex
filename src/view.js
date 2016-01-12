@@ -2,6 +2,8 @@ import m from 'mithril';
 import * as Constants from './data';
 import * as util from './roles';
 
+import renderHUD from './viewHUD';
+
 function transformProp() {
   return 'transform';
 }
@@ -293,29 +295,6 @@ function renderViewport(ctrl, viewHeight) {
     tag: 'div',
     attrs: attrs,
     children: [renderContent(ctrl)]
-  };
-}
-
-function renderHUD(ctrl) {
-  if (!ctrl.data.showHUD) {
-    return '';
-  }
-
-  const tileSize = ctrl.data.tileSize;
-  const width = ctrl.data.viewWidth;
-  const height = tileSize * 3 / 2;
-
-  const attrs = {
-    class: 'sp-hud',
-    style: {
-      backgroundSize: `${width}px ${height}px`,
-      height: height,
-      width: width
-    }
-  };
-  return {
-    tag: 'div',
-    attrs: attrs
   };
 }
 

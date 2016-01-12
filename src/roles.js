@@ -10,6 +10,13 @@ function actRole(data, pos) {
   }
 }
 
+function emptyTile(data, pos) {
+  if (data.tiles[pos].role === 'INFOTRON') {
+    data.infotronsNeeded--;
+  }
+  data.tiles[pos] = { role: 'EMPTY' };
+}
+
 function clearTrail(data, pos) {
   const tile = data.tiles[pos];
   if (tile.moving === 2) {
@@ -57,7 +64,7 @@ function vanishClear(data, pos) {
   // tile.vanishing = 0;
   // delete tile.nextDecision;
   //data.tiles[pos] = levels.makeRole(0);
-  data.tiles[pos] = { role: 'EMPTY' };
+  emptyTile(data, pos);
 }
 
 /*
@@ -240,7 +247,7 @@ function morphyEatMove(data, pos, dir) {
   const eatRole = data.tiles[eatPos].role;
 
   //data.tiles[eatPos] = levels.makeRole(0);
-  data.tiles[eatPos] = { role: 'EMPTY' };
+  emptyTile(data, eatPos);
 
   morphyMoveBase(data, pos, dir);
 

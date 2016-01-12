@@ -1,5 +1,4 @@
 $image-path: 'assets/images/';
-$image-hud: $image-path + 'hud.png';
 $image-border: $image-path + 'SupaplexBorder.png';
 $image-tile: $image-path + 'Supaplex32.png';
 
@@ -14,13 +13,6 @@ $image-tile: $image-path + 'Supaplex32.png';
     position:relative;
     border: black solid;
     background: black;
-}
-
-.sp-hud {
-    position:absolute;
-    border-top: 1px black solid;
-    bottom:0px;
-    background-image: url($image-hud);
 }
 
 .sp-viewport {

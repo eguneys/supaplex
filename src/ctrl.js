@@ -1,9 +1,16 @@
 import data from './data';
 import * as roles from './roles';
 import * as levels from './levels';
+import * as util from './util';
 
 export default function(levelData) {
   this.data = data();
+
+  this.vm = {
+    hud: {}
+  };
+
+  this.levelData = levelData;
 
   this.move = (dir) => {
     const data = this.data;
@@ -30,9 +37,17 @@ export default function(levelData) {
 
   };
 
-  this.init = () => {
+  this.init = (levelNo) => {
+    const level = this.levelData.levels[levelNo - 1];
+
     const data = this.data;
-    data.tiles = levels.read(levelData.levels[0].data);
+
+    data.levelNo = levelNo;
+    data.levelTitle = level.title;
+    data.infotronsNeeded = level.infotronsNeeded;
+    data.gravity = level.gravity;
+
+    data.tiles = levels.read(level.data);
 
     this.centerScroll();
   };
@@ -46,9 +61,17 @@ export default function(levelData) {
     });
   };
 
-  this.init();
+  this.updateHUD = () => {
+    const data = this.data;
+    const vm = this.vm;
 
-  this.update = () => {
+
+    vm.levelNo = util.padZero(data.levelNo, 3);
+    vm.levelTitle = data.levelTitle;
+    vm.infotronsNeeded = util.padZero(data.infotronsNeeded, 3);
+  };
+
+  this.updateGame = () => {
     const data = this.data;
     const tiles = data.tiles;
 
@@ -62,6 +85,11 @@ export default function(levelData) {
       if (data.frame === tile.frame) return;
       roles.actRole(data, pos);
     });
+  };
+
+  this.update = () => {
+    this.updateGame();
+    this.updateHUD();
   };
 
   this.updateTweens = (rest) => {
@@ -93,6 +121,8 @@ export default function(levelData) {
 
     data.tweens = newTweens;
   };
+
+  this.init(1);
 }
 
 function updateTween(tween, now, duration) {
