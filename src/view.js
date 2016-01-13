@@ -2,6 +2,7 @@ import m from 'mithril';
 import * as Constants from './data';
 import * as util from './roles';
 
+import renderMenu from './viewMenu';
 import renderHUD from './viewHUD';
 
 function transformProp() {
@@ -323,7 +324,8 @@ function renderViewportWrap(ctrl) {
 }
 
 function render(ctrl) {
-  const children = [renderViewportWrap(ctrl)];
+  //const children = [renderViewportWrap(ctrl)];
+  const children = [renderMenu(ctrl)];
 
   return {
     tag: 'div',

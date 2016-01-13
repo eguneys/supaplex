@@ -16,8 +16,6 @@ $image-menu: $image-path + 'Supaplex_Main2.png';
 
 .sp-menu {
     background-image: url($image-menu);
-    height: 100%;
-    width: 100%;
 }
 
 .sp-green {
@@ -36,34 +34,20 @@ $image-menu: $image-path + 'Supaplex_Main2.png';
     color: #e3e300;
 }
 
+.sp-text-menu {
+    font-family: supaplex;
+    font-size: 40px;
+}
+
 .sp-text {
     font-family: supaplex;
     font-size: 40px;
     letter-spacing: 4px;
 }
 
-.sp-message-line {
-    position: absolute;
-}
-
-.sp-level-list {
-    position: absolute;
-}
-
 .sp-level-button {
-    position: absolute;
     height: 20px;
-    width: 326px;
-}
-
-.sp-level-button.up {
-    top: -12px;
-    left: -4px;
-}
-
-.sp-level-button.down {
-    top: 66px;
-    left: -4px;
+    width: 325px;
 }
 
 .sp-button {
@@ -72,7 +56,7 @@ $image-menu: $image-path + 'Supaplex_Main2.png';
     border-bottom: 2px solid #616161;
     border-right: 2px solid #616161;
 }
-.sp-button:hover {
+.sp-button:active {
     border-bottom: 2px solid #929292;
     border-right: 3px solid #929292;
     border-top: 2px solid #616161;

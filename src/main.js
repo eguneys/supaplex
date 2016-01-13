@@ -9,16 +9,8 @@ function requestLevels() {
 }
 
 const update = (ctrl, element) => {
-  const now = Date.now();
-  const rest = 1 - (now - ctrl.data.lastUpdateTime) /
-          ctrl.data.updateDuration;
+  ctrl.update();
 
-  if (rest <= 0) {
-    ctrl.data.lastUpdateTime = now;
-    ctrl.update();
-  }
-
-  ctrl.updateTweens();
   m.render(element, view(ctrl));
   requestAnimationFrame(update.bind(null, ctrl, element));
 };

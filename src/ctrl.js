@@ -1,13 +1,49 @@
 import data from './data';
+import * as menu from './menu';
 import * as roles from './roles';
 import * as levels from './levels';
 import * as util from './util';
 
 export default function(levelData) {
+  const WELCOME_MSG = '&nbsp;&nbsp;WELCOME TO SUPAPLEX';
   this.data = data();
 
   this.vm = {
-    hud: {}
+    messageLine: WELCOME_MSG
+  };
+
+  this.levelLine = (levelNo) => {
+    const levelIndex = levelNo - 1;
+    if (levelIndex < 0 || levelIndex >= this.levelData.levels.length) {
+      return '';
+    }
+
+    const level = this.levelData.levels[levelIndex];
+
+    const number = util.padZero(levelNo, 3);
+    const name = level.title;
+
+    return `${number} ${name}`;
+  };
+
+  this.updateMenu = () => {
+    const data = this.data;
+    const vm = this.vm;
+
+    const selectedLevel = data.selectedLevel;
+
+    vm.levelLine0 = this.levelLine(selectedLevel - 1);
+    vm.levelLine1 = this.levelLine(selectedLevel);
+    vm.levelLine2 = this.levelLine(selectedLevel + 1);
+  };
+
+  this.updateHUD = () => {
+    const data = this.data;
+    const vm = this.vm;
+
+    vm.levelNo = util.padZero(data.levelNo, 3);
+    vm.levelTitle = data.levelTitle;
+    vm.infotronsNeeded = util.padZero(data.infotronsNeeded, 3);
   };
 
   this.levelData = levelData;
@@ -61,16 +97,6 @@ export default function(levelData) {
     });
   };
 
-  this.updateHUD = () => {
-    const data = this.data;
-    const vm = this.vm;
-
-
-    vm.levelNo = util.padZero(data.levelNo, 3);
-    vm.levelTitle = data.levelTitle;
-    vm.infotronsNeeded = util.padZero(data.infotronsNeeded, 3);
-  };
-
   this.updateGame = () => {
     const data = this.data;
     const tiles = data.tiles;
@@ -88,11 +114,22 @@ export default function(levelData) {
   };
 
   this.update = () => {
-    this.updateGame();
-    this.updateHUD();
+    const data = this.data;
+
+    const now = Date.now();
+    const rest = 1 - (now - data.lastUpdateTime) / data.updateDuration;
+
+    if (rest <= 0) {
+      data.lastUpdateTime = now;
+      this.updateGame();
+      this.updateHUD();
+    }
+
+    this.updateMenu();
+    this.updateTweens();
   };
 
-  this.updateTweens = (rest) => {
+  this.updateTweens = () => {
     const data = this.data;
     const newTweens = {};
 
