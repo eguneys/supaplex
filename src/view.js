@@ -324,8 +324,12 @@ function renderViewportWrap(ctrl) {
 }
 
 function render(ctrl) {
-  //const children = [renderViewportWrap(ctrl)];
-  const children = [renderMenu(ctrl)];
+  const children = [];
+  if (ctrl.data.currentView === 'GAME') {
+    children.push(renderViewportWrap(ctrl));
+  } else {
+    children.push(renderMenu(ctrl));
+  }
 
   return {
     tag: 'div',

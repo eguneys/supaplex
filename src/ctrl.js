@@ -12,6 +12,12 @@ export default function(levelData) {
     messageLine: WELCOME_MSG
   };
 
+  this.levelSelect = () => {
+    const data = this.data;
+    this.init(data.selectedLevel);
+    data.currentView = 'GAME';
+  };
+
   this.levelLine = (levelNo) => {
     const levelIndex = levelNo - 1;
     if (levelIndex < 0 || levelIndex >= this.levelData.levels.length) {
@@ -113,7 +119,7 @@ export default function(levelData) {
     });
   };
 
-  this.update = () => {
+  this.updateGameView = () => {
     const data = this.data;
 
     const now = Date.now();
@@ -125,8 +131,17 @@ export default function(levelData) {
       this.updateHUD();
     }
 
-    this.updateMenu();
     this.updateTweens();
+  };
+
+  this.update = () => {
+    const data = this.data;
+
+    if (data.currentView === 'GAME') {
+      this.updateGameView();
+    } else {
+      this.updateMenu();
+    }
   };
 
   this.updateTweens = () => {
@@ -158,8 +173,6 @@ export default function(levelData) {
 
     data.tweens = newTweens;
   };
-
-  this.init(1);
 }
 
 function updateTween(tween, now, duration) {

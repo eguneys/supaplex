@@ -1,33 +1,13 @@
-function run(data) {
-  delayedInput(data);
+function levelListUp(data) {
+  data.selectedLevel = Math.max(1, data.selectedLevel - 1);
 }
 
-const delayedInput = withDelay(handleInput);
-
-function withDelay(f) {
-  let delay = 0;
-  return function() {
-    if (delay === 0) {
-      f.apply(this, arguments);
-      delay = 10;
-    } else {
-      delay--;
-    }
-  };
+function levelListDown(data) {
+  data.selectedLevel = Math.min(111, data.selectedLevel + 1);
 }
 
-function handleInput(data) {
-
-  if (data.inputs['LEVEL_UP']) {
-    data.selectedLevel--;
-  } else if (data.inputs['LEVEL_DOWN']) {
-    data.selectedLevel++;
-  } else {
-    return false;
-  }
-  return true;
-}
 
 export {
-  run
-};
+  levelListUp,
+  levelListDown
+}
