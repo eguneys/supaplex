@@ -23,6 +23,8 @@ const init = (element, config) => {
     keyboard(controller);
 
     update(controller, element);
+
+    //controller.levelSelect(0);
   });
 };
 

@@ -13,7 +13,7 @@ const RoleCode = {
   6: 'WALL',
   7: 'EXIT',
   8: 'FLOPPY_ORANGE',
-  9: 'PORT-RIGHT',
+  9: 'PORT_RIGHT',
   10: 'PORT_DOWN',
   11: 'PORT_LEFT',
   12: 'PORT_UP',
@@ -23,27 +23,29 @@ const RoleCode = {
   16: 'GPORT_UP',
   17: 'SNIKSNAK',
   18: 'FLOPPY_YELLOW',
-  19: 'PORT_VERTICAL',
-  20: 'PORT_HORIZONTAL',
-  21: 'PORT-ALL',
-  22: 'ELECTRON',
-  23: 'BUG',
-  24: 'CHIP_LEFT',
-  25: 'CHIP_RIGHT',
-  26: 'HARDWARE1',
-  27: 'HARDWARE2',
-  28: 'HARDWARE3',
-  29: 'HARDWARE4',
-  30: 'HARDWARE5',
-  31: 'HARDWARE6',
-  32: 'HARDWARE7',
-  33: 'HARDWARE8',
-  34: 'HARDWARE9',
-  35: 'HARDWARE10',
-  36: 'HARDWARE11',
-  37: 'HARDWARE12',
-  38: 'CHIP_TOP',
-  39: 'CHIP_BOTTOM'
+  19: 'TERMINAL',
+  20: 'FLOPPY_RED',
+  21: 'PORT_VERTICAL',
+  22: 'PORT_HORIZONTAL',
+  23: 'PORT_ALL',
+  24: 'ELECTRON',
+  25: 'BUG',
+  26: 'CHIP_LEFT',
+  27: 'CHIP_RIGHT',
+  28: 'HARDWARE1',
+  29: 'HARDWARE2',
+  30: 'HARDWARE3',
+  31: 'HARDWARE4',
+  32: 'HARDWARE5',
+  33: 'HARDWARE6',
+  34: 'HARDWARE7',
+  35: 'HARDWARE8',
+  36: 'HARDWARE9',
+  37: 'HARDWARE10',
+  38: 'HARDWARE11',
+  39: 'HARDWARE12',
+  40: 'CHIP_TOP',
+  41: 'CHIP_BOTTOM'
 };
 
 
@@ -69,6 +71,21 @@ const Role = {
   BASE: {
     eatable: true
   },
+  CHIP: {
+    round: true
+  },
+  CHIP_LEFT: {
+    round: true
+  },
+  CHIP_RIGHT: {
+    round: true
+  },
+  CHIP_TOP: {
+    round: true
+  },
+  CHIP_BOTTOM: {
+    round: true
+  },
   ELECTRON: {
     facing: 'left',
     preFace: 'left',
@@ -76,7 +93,7 @@ const Role = {
     decision: 'decisionTurn'
   },
   BUG: {
-    active: 16,
+    active: 1000 / Constants.UPDATE_DURATION,
     decision: 'decisionBug'
   },
   MURPHY: {
@@ -87,6 +104,24 @@ const Role = {
   },
   PORT_ALL: {
     portable: {left: true, right: true, up: true, down: true }
+  },
+  PORT_LEFT: {
+    portable: {left: true }
+  },
+  PORT_TOP: {
+    portable: { up: true }
+  },
+  PORT_RIGHT: {
+    portable: { right: true }
+  },
+  PORT_DOWN: {
+    portable: { down: true }
+  },
+  PORT_HORIZONTAL: {
+    portable: {left: true, right: true }
+  },
+  PORT_VERTICAL: {
+    portable: { up: true, down: true }
   }
 };
 
@@ -112,17 +147,17 @@ function roleMaker() {
 
 const makeRole = roleMaker();
 
-const _initial = [2, 0, 3, 0, 0, 0, 0, 0, 0, 0,
-                  2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  2, 0, 2, 0, 0, 0, 0, 0, 0, 0,
-                  9, 0, 0, 2, 0, 0, 0, 0, 0, 0,
-                  9, 2, 2, 0, 3, 1, 13, 0, 13, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  9, 0, 0, 0, 13, 8, 8, 8, 8, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                  9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+const _initial = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                  39, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+                  0, 19, 0, 0, 9, 2, 24, 0, 0, 0,
+                  24, 0, 21, 0, 0, 10, 0, 25, 0, 0,
+                  0, 0, 0, 0, 0, 1, 0, 11, 38, 0,
+                  0, 4, 7, 21, 0, 0, 0, 0, 13, 39,
+                  0, 30, 18, 8, 13, 0, 0, 0, 0, 20,
+                  26, 31, 35, 0, 0, 0, 0, 0, 0, 0,
+                  27, 32, 36, 0, 0, 0, 0, 0, 0, 0,
+                  28, 33, 37, 0, 0, 0, 0, 0, 0, 0,
+                  29, 34, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const initial = enhance(_initial);
@@ -159,7 +194,7 @@ function enhance(arr) {
     }
   }
 
-  result[util.pos2key([1, 7])] = 12;
+  result[util.pos2key([1, 7])] = 3;
 
   return result;
 }

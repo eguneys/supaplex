@@ -9,6 +9,8 @@ const VIEW_WIDTH = 10 * 2;
 const RENDER_HEIGHT = VIEW_HEIGHT + 3;
 const RENDER_WIDTH = VIEW_WIDTH + 3;
 
+const UPDATE_DURATION = 100;
+
 export {
   TILE_SIZE,
   VIEW_HEIGHT,
@@ -16,7 +18,8 @@ export {
   RENDER_HEIGHT,
   RENDER_WIDTH,
   MAP_WIDTH,
-  MAP_HEIGHT
+  MAP_HEIGHT,
+  UPDATE_DURATION
 };
 
 export default function(cfg) {
@@ -24,7 +27,7 @@ export default function(cfg) {
     // MENU
     selectedLevel: 1,
     // GAME
-    updateDuration: 100,
+    updateDuration: UPDATE_DURATION,
     lastUpdateTime: 0,
     frame: 0,
     viewOffset: [0, 0],

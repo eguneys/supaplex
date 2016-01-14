@@ -13,10 +13,10 @@ export default function(levelData) {
     messageLine: WELCOME_MSG
   };
 
-  this.levelSelect = () => {
+  this.levelSelect = (delay = 1) => {
     const data = this.data;
     roles.initGame(data);
-    anim.fadeToView(data, 'GAME', 1, 1);
+    anim.fadeToView(data, 'GAME', delay, 1);
   };
 
   this.levelLine = (levelNo) => {

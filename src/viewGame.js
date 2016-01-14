@@ -94,15 +94,25 @@ const roles = {
   TERMINAL_RED: 'redterminal',
   TERMINAL_GREEN: 'greenterminal',
   BASE: 'base',
+  CHIP: 'chip',
+  CHIP_TOP: 'chip-top',
+  CHIP_BOTTOM: 'chip-bottom',
+  CHIP_LEFT: 'chip-left',
+  CHIP_RIGHT: 'chip-right',
+  HARDWARE1: 'hardware1',
   ELECTRON: 'electron',
   BUG: 'base',
   MURPHY: 'morphy',
   PORT_ALL: 'port'
 };
 
+function getRoleClass(roleString) {
+  return roleString.toLowerCase().replace('_', '-');
+}
+
 function tileClass(tile) {
   if (!tile) return '';
-  const role = roles[tile.role];
+  const role = getRoleClass(tile.role);
 
   const animation = tileAnimation(role, tile);
 
@@ -111,7 +121,7 @@ function tileClass(tile) {
 
 function tileChildren(ctrl, tile) {
   let attrs;
-  if (tile.role === 'PORT_ALL' && tile.porting > 0) {
+  if (tile.porting > 0) {
 
     attrs = {
       style: {
@@ -145,7 +155,7 @@ function tileSiblings(ctrl, tile, pos, tileElement) {
         left: pos[0] * 32,
         top: pos[1] * 32
       },
-      class: `tile ${roles[tile.eatingRole]}`
+      class: `tile ${getRoleClass(tile.eatingRole)}`
     };
 
     const eatenTile = { tag: 'div',
