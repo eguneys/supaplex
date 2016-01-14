@@ -1,6 +1,5 @@
-import * as rolls from './rolls';
-import * as roles from './roles';
 import * as Constants from './data';
+import * as util from './util';
 
 const { MAP_HEIGHT, MAP_WIDTH } = Constants;
 
@@ -53,19 +52,19 @@ const Role = {
     facing: 'left',
     preFace: 'left',
     moving: 0,
-    nextDecision: roles.decisionTurn
+    decision: 'decisionTurn'
   },
   ZONK: {
     moving: 0,
     round: true,
     pushable: true,
-    nextDecision: rolls.decisionFall
+    decision: 'decisionFall'
   },
   INFOTRON: {
     moving: 0,
     round: true,
     eatable: true,
-    nextDecision: rolls.decisionFall
+    decision: 'decisionFall'
   },
   BASE: {
     eatable: true
@@ -74,17 +73,17 @@ const Role = {
     facing: 'left',
     preFace: 'left',
     moving: 0,
-    nextDecision: roles.decisionTurn
+    decision: 'decisionTurn'
   },
   BUG: {
     active: 16,
-    nextDecision: roles.decisionBug
+    decision: 'decisionBug'
   },
   MURPHY: {
     facingHorizontal: 'left',
     facing: 'left',
     moving: 0,
-    nextDecision: roles.decisionInput
+    decision: 'decisionInput'
   },
   PORT_ALL: {
     portable: {left: true, right: true, up: true, down: true }
@@ -160,7 +159,7 @@ function enhance(arr) {
     }
   }
 
-  result[roles.pos2key([1, 7])] = 12;
+  result[util.pos2key([1, 7])] = 12;
 
   return result;
 }
@@ -170,7 +169,7 @@ function read(tiles) {
 
   for (var i = 0; i < MAP_HEIGHT; i++) {
     for (var j = 0; j < MAP_WIDTH; j++) {
-      const dstKey = roles.pos2key([j, i]);
+      const dstKey = util.pos2key([j, i]);
       const srcKey = (i + 1) * 60 + (j + 1);
       result[dstKey] = makeRole(tiles[srcKey]);
     }

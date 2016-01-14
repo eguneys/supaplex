@@ -1,4 +1,4 @@
-import * as roles from './roles';
+import * as decisions from './decisions';
 
 /*
  // still // fall 2 // roll 2
@@ -15,11 +15,11 @@ import * as roles from './roles';
 function decisionFall(data, pos) {
   const tile = data.tiles[pos];
 
-  if (roles.canFall(data, pos)) {
+  if (decisions.canFall(data, pos)) {
     fall1(data, pos);
-  } else if (roles.canRoll(data, pos, 'left')) {
+  } else if (decisions.canRoll(data, pos, 'left')) {
     roll1(data, pos, 'left', 1);
-  } else if (roles.canRoll(data, pos, 'right')) {
+  } else if (decisions.canRoll(data, pos, 'right')) {
     roll1(data, pos, 'right', 1);
   } else {
     still(data, pos);
@@ -33,7 +33,7 @@ function decisionFall2(data, pos) {
 function decisionRoll2(data, pos) {
   const tile = data.tiles[pos];
 
-  if (tile.toFall === 0 || roles.canFall(data, pos)) {
+  if (tile.toFall === 0 || decisions.canFall(data, pos)) {
     roll2(data, pos);
   } else {
     roll3(data, pos);
@@ -43,7 +43,7 @@ function decisionRoll2(data, pos) {
 function fall1(data, pos) {
   const tile = data.tiles[pos];
 
-  roles.moveChar(data, pos, 'down');
+  decisions.moveChar(data, pos, 'down');
 
   tile.rolling = 0;
   tile.falling = 1;
@@ -62,7 +62,7 @@ function fall2(data, pos) {
 function roll1(data, pos, dir, toFall = 0) {
   const tile = data.tiles[pos];
 
-  roles.moveChar(data, pos, dir);
+  decisions.moveChar(data, pos, dir);
 
   tile.toFall = toFall;
   tile.moving = 1;

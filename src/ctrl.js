@@ -1,12 +1,12 @@
 import data from './data';
-import * as menu from './menu';
 import * as roles from './roles';
-import * as levels from './levels';
 import * as util from './util';
 
 export default function(levelData) {
   const WELCOME_MSG = '&nbsp;&nbsp;WELCOME TO SUPAPLEX';
   this.data = data();
+
+  this.data.levelData = levelData;
 
   this.vm = {
     messageLine: WELCOME_MSG
@@ -14,17 +14,19 @@ export default function(levelData) {
 
   this.levelSelect = () => {
     const data = this.data;
-    this.init(data.selectedLevel);
+    roles.initGame(data);
     data.currentView = 'GAME';
   };
 
   this.levelLine = (levelNo) => {
+    const data = this.data;
+
     const levelIndex = levelNo - 1;
-    if (levelIndex < 0 || levelIndex >= this.levelData.levels.length) {
+    if (levelIndex < 0 || levelIndex >= data.levelData.levels.length) {
       return '';
     }
 
-    const level = this.levelData.levels[levelIndex];
+    const level = data.levelData.levels[levelIndex];
 
     const number = util.padZero(levelNo, 3);
     const name = level.title;
@@ -52,8 +54,6 @@ export default function(levelData) {
     vm.infotronsNeeded = util.padZero(data.infotronsNeeded, 3);
   };
 
-  this.levelData = levelData;
-
   this.move = (dir) => {
     const data = this.data;
     data.inputs[dir] = true;
@@ -62,45 +62,6 @@ export default function(levelData) {
   this.clearMove = (dir) => {
     const data = this.data;
     data.inputs[dir] = false;
-  };
-
-  this.toggleHUD = () => {
-    const data = this.data;
-
-    data.showHUD = !data.showHUD;
-
-    if (data.showHUD) {
-      data.topEdgeOffset = 1;
-    } else {
-      data.topEdgeOffset = (1 / 3);
-    }
-
-    this.centerScroll();
-
-  };
-
-  this.init = (levelNo) => {
-    const level = this.levelData.levels[levelNo - 1];
-
-    const data = this.data;
-
-    data.levelNo = levelNo;
-    data.levelTitle = level.title;
-    data.infotronsNeeded = level.infotronsNeeded;
-    data.gravity = level.gravity;
-
-    data.tiles = levels.read(level.data);
-
-    this.centerScroll();
-  };
-
-  this.centerScroll = () => {
-    const data = this.data;
-    data.tiles.map((tile, pos) => {
-      if (tile.role === 'MURPHY') {
-        roles.viewportCenter(data, roles.key2pos(pos));
-      }
-    });
   };
 
   this.updateGame = () => {

@@ -14,7 +14,7 @@ function preventing(f) {
 
 
 export default function init(ctrl) {
-  const keys = ['left', 'right', 'up', 'down', 'space'];
+  const keys = ['left', 'right', 'up', 'down', 'space', 'enter'];
 
   keys.map((dir) => {
     k.bind(dir, preventing(() => {
@@ -24,8 +24,4 @@ export default function init(ctrl) {
       ctrl.clearMove(dir);
     }), 'keyup');
   });
-
-  k.bind('enter', preventing(() => {
-    ctrl.toggleHUD();
-  }), 'keydown');
 };
