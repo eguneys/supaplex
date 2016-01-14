@@ -70,12 +70,20 @@ function holdit(action) {
 
 function renderButton(ctrl, classes, holdAction) {
   const attrs = {
-    class: `sp-button ${classes}`
+    class: `sp-button ${classes}`,
+    config: function(el, isUpdate, context) {
+      if (isUpdate) return;
+
+      document.addEventListener('mouseup', holdAction.mouseup);
+
+      context.onunload = function() {
+        document.removeEventListener('mouseup', holdAction.mouseup);
+      };
+    }
   };
 
   if (holdAction) {
     attrs.onmousedown = holdAction.mousedown.bind(null, ctrl.data);
-    attrs.onmouseup = holdAction.mouseup;
   }
 
   return {

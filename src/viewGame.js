@@ -139,7 +139,7 @@ function tileChildren(ctrl, tile) {
 }
 
 function tileSiblings(ctrl, tile, pos, tileElement) {
-  if (tile.role === 'MURPHY' && tile.eatingRole !== '') {
+  if (tile.role === 'MURPHY' && tile.eatingRole) {
     const attrs = {
       style: {
         left: pos[0] * 32,

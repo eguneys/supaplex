@@ -747,7 +747,7 @@ const Move = {
 const moves = ['left', 'down', 'right', 'up'];
 
 export {
-  viewportCenter,
+  centerScroll,
   moveChar,
   canFall,
   canRoll,

@@ -29,7 +29,7 @@ function clearTrail(data, pos) {
     trailTile.isTrail = false;
     delete tile.trailPos;
     tile.moving = 0;
-    tile.eatingRole = '';
+    delete tile.eatingRole;
   }
   if (tile.snapping === 2) {
     tile.snapping = 0;
@@ -46,6 +46,8 @@ function initGame(data) {
   data.gravity = level.gravity;
 
   data.tiles = levels.read(level.data);
+
+  decisions.centerScroll(data);
 };
 
 export {
