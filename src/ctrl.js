@@ -1,6 +1,7 @@
 import data from './data';
 import * as roles from './roles';
 import * as util from './util';
+import * as anim from './anim';
 
 export default function(levelData) {
   const WELCOME_MSG = '&nbsp;&nbsp;WELCOME TO SUPAPLEX';
@@ -15,7 +16,7 @@ export default function(levelData) {
   this.levelSelect = () => {
     const data = this.data;
     roles.initGame(data);
-    data.currentView = 'GAME';
+    anim.fadeToView(data, 'GAME', 1, 1);
   };
 
   this.levelLine = (levelNo) => {

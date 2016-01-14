@@ -2,6 +2,7 @@ import * as levels from './levels';
 import * as rolls from './rolls';
 import * as Constants from './data';
 import * as util from './util';
+import * as anim from './anim';
 
 const { MAP_HEIGHT, MAP_WIDTH } = Constants;
 
@@ -112,9 +113,16 @@ function decisionInput(data, pos) {
   const dirs = ['left', 'right', 'up', 'down'];
   const space = 'space';
   const enter = 'enter';
+  const escape = 'escape';
 
   if (inputs[enter]) {
     toggleHUD(data);
+  }
+
+  if (inputs[escape]) {
+    // explode
+    // transition
+    anim.fadeToView(data, 'MENU', 0, 1);
   }
 
   let handled =

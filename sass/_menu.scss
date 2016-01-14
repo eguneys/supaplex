@@ -15,6 +15,7 @@ $image-menu: $image-path + 'Supaplex_Main2.png';
 }
 
 .sp-menu {
+    position: relative;
     background-image: url($image-menu);
 }
 

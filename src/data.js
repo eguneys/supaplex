@@ -37,7 +37,11 @@ export default function(cfg) {
     viewWidth: VIEW_WIDTH * TILE_SIZE,
     tileSize: TILE_SIZE,
     tweens: {},
-    inputs: {}
+    inputs: {},
+    transition: {
+      opacity: 1,
+      time: 0
+    }
   };
 
 

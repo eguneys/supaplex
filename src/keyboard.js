@@ -14,7 +14,7 @@ function preventing(f) {
 
 
 export default function init(ctrl) {
-  const keys = ['left', 'right', 'up', 'down', 'space', 'enter'];
+  const keys = ['left', 'right', 'up', 'down', 'space', 'enter', 'escape'];
 
   keys.map((dir) => {
     k.bind(dir, preventing(() => {
